@@ -53,8 +53,10 @@ let form = {
       css: "webix_primary",
       value: "Checkout",
       click: function() {
-        this.getParentView().validate();
-        $$(tableHistory).show();
+        // this.getParentView().validate();
+        $$("buttonBage").config.badge = "";
+        $$("buttonBage").refresh();
+        $$("tableHistory").show();
       }
     }
   ],

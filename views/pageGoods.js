@@ -32,7 +32,9 @@ let table = {
         ` <image class="image" src="${obj.image || defaultPhoto}" />`
     },
     {
-      id: "name",
+      template: obj => {
+        return `<div>${obj.value} ${obj.model}</div>`;
+      },
       header: "Name",
       fillspace: 8
     },
@@ -83,7 +85,7 @@ let buttons = {
       click: function() {
         let checkTable = $$("tableOrdered").getFirstId();
         if (checkTable === undefined) {
-          webix.message("there are no prodacts in the Bag");
+          webix.message("select prodacts to order");
         } else {
           $$("pageOrder").show();
         }

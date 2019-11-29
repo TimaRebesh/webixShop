@@ -20,7 +20,14 @@ const toolbar = {
     { view: "label", label: "Hi, user!" },
     {},
     { view: "button", label: "Logout", width: 150 },
-    { view: "button", label: "History", width: 150 },
+    {
+      view: "button",
+      label: "History",
+      width: 150,
+      click: function() {
+        $$("tableHistory").show();
+      }
+    },
     {
       view: "button",
       label: "Bag",

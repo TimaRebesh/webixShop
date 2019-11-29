@@ -1,4 +1,4 @@
-export { prodacts, phones, prodactsTreeData };
+export { prodacts, phones };
 
 let prodactsServer = [
   {

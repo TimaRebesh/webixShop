@@ -21,4 +21,4 @@ let userOrderServer = [
 
 let userOrder = new webix.DataCollection({ data: userOrderServer });
 
-console.log(userOrder[0]);
+console.log(userOrder);

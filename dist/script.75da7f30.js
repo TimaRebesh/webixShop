@@ -123,7 +123,7 @@ parcelRequire = (function (modules, cache, entry, globalName) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.prodactsTreeData = exports.phones = exports.prodacts = void 0;
+exports.phones = exports.prodacts = void 0;
 var prodactsServer = [{
   id: "1",
   value: "Samsung",
@@ -247,7 +247,6 @@ function createPhonesData() {
 createPhonesData(); // сonvert all data of prodacts to all treedata
 
 var prodactsTreeData = [];
-exports.prodactsTreeData = prodactsTreeData;
 var set = new Set();
 var idFirstNum = 0;
 var idSecondNum = 0;
@@ -382,7 +381,7 @@ var userOrder = new webix.DataCollection({
   data: userOrderServer
 });
 exports.userOrder = userOrder;
-console.log(userOrder[0]);
+console.log(userOrder);
 },{}],"views/datatable.js":[function(require,module,exports) {
 "use strict";
 
@@ -406,11 +405,6 @@ var datatable = {
   fixedRowHeight: false,
   rowHeight: 100,
   data: _prodacts.prodacts,
-  scheme: {
-    $init: function $init(obj) {
-      obj.name = "".concat(obj.value, " ").concat(obj.model);
-    }
-  },
   select: true,
   columns: [{
     id: "image",
@@ -421,7 +415,9 @@ var datatable = {
       return "\n          <image class=\"image\" src=\"".concat(obj.image || defaultPhoto, "\" />\n        ");
     }
   }, {
-    id: "name",
+    template: function template(obj) {
+      return "<div>".concat(obj.value, " ").concat(obj.model, "</div>");
+    },
     header: [{
       text: "Name"
     }, {
@@ -474,8 +470,8 @@ var datatable = {
       }
 
       $$("buttonBage").refresh();
-      this.getSelectedItem().sum = this.getSelectedItem().price * this.getSelectedItem().orderedAmount;
-      var selected = this.getSelectedItem(); // userOrder.order.push(selected);
+      this.getSelectedItem().sum = this.getSelectedItem().price * this.getSelectedItem().orderedAmount; // let selected = this.getSelectedItem();
+      // userOrder.order.push(selected);
 
       var name = this.getSelectedItem().value + this.getSelectedItem().model;
       webix.message("<b>".concat(name, "</b> has been added to your bag"));
@@ -678,8 +674,10 @@ var form = {
     css: "webix_primary",
     value: "Checkout",
     click: function click() {
-      this.getParentView().validate();
-      $$(tableHistory).show();
+      // this.getParentView().validate();
+      $$("buttonBage").config.badge = "";
+      $$("buttonBage").refresh();
+      $$("tableHistory").show();
     }
   }],
   rules: {// text1: webix.rules.isNotEmpty,
@@ -750,7 +748,9 @@ var table = {
       return " <image class=\"image\" src=\"".concat(obj.image || defaultPhoto, "\" />");
     }
   }, {
-    id: "name",
+    template: function template(obj) {
+      return "<div>".concat(obj.value, " ").concat(obj.model, "</div>");
+    },
     header: "Name",
     fillspace: 8
   }, {
@@ -796,7 +796,7 @@ var buttons = {
       var checkTable = $$("tableOrdered").getFirstId();
 
       if (checkTable === undefined) {
-        webix.message("there are no prodacts in the Bag");
+        webix.message("select prodacts to order");
       } else {
         $$("pageOrder").show();
       }
@@ -900,7 +900,10 @@ var toolbar = {
   }, {
     view: "button",
     label: "History",
-    width: 150
+    width: 150,
+    click: function click() {
+      $$("tableHistory").show();
+    }
   }, {
     view: "button",
     label: "Bag",

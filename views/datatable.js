@@ -16,11 +16,7 @@ let datatable = {
   fixedRowHeight: false,
   rowHeight: 100,
   data: prodacts,
-  scheme: {
-    $init: function(obj) {
-      obj.name = `${obj.value} ${obj.model}`;
-    }
-  },
+
   select: true,
   columns: [
     {
@@ -33,7 +29,9 @@ let datatable = {
         `
     },
     {
-      id: "name",
+      template: obj => {
+        return `<div>${obj.value} ${obj.model}</div>`;
+      },
       header: [{ text: "Name" }, { content: "textFilter" }],
       fillspace: 8
     },
@@ -92,7 +90,7 @@ let datatable = {
 
       this.getSelectedItem().sum =
         this.getSelectedItem().price * this.getSelectedItem().orderedAmount;
-      let selected = this.getSelectedItem();
+      // let selected = this.getSelectedItem();
 
       // userOrder.order.push(selected);
 
