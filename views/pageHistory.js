@@ -1,47 +1,50 @@
+import { progressOfOrder } from "../data/progressOfOrder";
+
 export let tableHistory = {
   view: "datatable",
   id: "tableHistory",
   css: "data_style",
   fixedRowHeight: false,
-  scheme: {
-    $init: function(obj) {
-      obj.name = `${obj.value} ${obj.model}`;
-    }
-  },
-  select: true,
+  rowHeight: 50,
+  data: progressOfOrder,
+  // scheme: {
+  //   $init: function(obj) {
+  //     obj.name = `${obj.value} ${obj.model}`;
+  //   }
+  // },
   columns: [
     {
-      id: "name",
-      header: "Product",
+      id: "prodact",
+      header: [{ text: "Prodacts" }, { content: "textFilter" }],
       fillspace: 3
     },
     {
-      id: "name",
+      id: "amount",
       header: "Amount",
       fillspace: 1
     },
     {
-      id: "name",
+      id: "address",
       header: "Address",
       fillspace: 1
     },
     {
-      id: "name",
+      id: "delivery",
       header: "Delivery",
       fillspace: 1
     },
     {
-      id: "name",
+      id: "payment",
       header: "Payment",
       fillspace: 1
     },
     {
-      id: "name",
+      id: "orderData",
       header: "Order date",
       fillspace: 2
     },
     {
-      id: "name",
+      id: "status",
       header: "Status",
       fillspace: 1
     }

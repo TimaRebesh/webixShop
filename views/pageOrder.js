@@ -54,8 +54,13 @@ let form = {
       value: "Checkout",
       click: function() {
         // this.getParentView().validate();
+        //  create order progress
+
+        //
+        //
         $$("buttonBage").config.badge = "";
         $$("buttonBage").refresh();
+        $$("tableHistory").refresh();
         $$("tableHistory").show();
       }
     }

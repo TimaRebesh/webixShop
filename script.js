@@ -62,6 +62,9 @@ const treeNavigation = {
           return obj.value === selectedItem;
         });
       }
+    },
+    onItemClick: function() {
+      $$("myDatatable").show();
     }
   }
 };

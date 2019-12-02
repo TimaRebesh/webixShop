@@ -207,7 +207,7 @@ var prodactsServer = [{
 }, {
   id: "9",
   value: "Nokia",
-  model: "33101",
+  model: "3310",
   price: 3800,
   rating: 110,
   orderedAmount: 0,
@@ -363,25 +363,11 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.userOrder = void 0;
-var userOrderServer = [{
-  userInfo: {},
-  order: [{
-    id: "9",
-    value: "Nokia",
-    model: "33101",
-    price: 3800,
-    rating: 110,
-    orderedAmount: 0,
-    sum: 0,
-    amount: 0,
-    image: "https://mobidevices.ru/images/2014/04/Nokia-33101.jpg"
-  }]
-}];
+var userOrderServer = [];
 var userOrder = new webix.DataCollection({
   data: userOrderServer
 });
 exports.userOrder = userOrder;
-console.log(userOrder);
 },{}],"views/datatable.js":[function(require,module,exports) {
 "use strict";
 
@@ -442,9 +428,6 @@ var datatable = {
     width: 100,
     template: "<image class='image_buy' src='http://pngimg.com/uploads/shopping_cart/shopping_cart_PNG3.png'></image>"
   }],
-  // selectedItem: function() {
-  //   return this.getSelectedItem();
-  // },
   type: {
     myCounter: function myCounter(obj, common, value, column, index) {
       value = 0;
@@ -462,20 +445,32 @@ var datatable = {
       $$("myDatatable").refresh();
     },
     image_buy: function image_buy() {
-      if (this.getSelectedItem().amount == undefined || this.getSelectedItem().amount === 0) return;
+      var selected = this.getSelectedItem();
+      if (selected.amount == undefined || selected.amount === 0) return;
 
-      for (var i = 1; i <= this.getSelectedItem().amount; i++) {
-        this.getSelectedItem().orderedAmount = this.getSelectedItem().amount;
-        $$("buttonBage").config.badge++;
+      for (var i = 1; i <= selected.amount; i++) {
+        selected.orderedAmount = selected.amount;
       }
 
-      $$("buttonBage").refresh();
-      this.getSelectedItem().sum = this.getSelectedItem().price * this.getSelectedItem().orderedAmount; // let selected = this.getSelectedItem();
-      // userOrder.order.push(selected);
+      selected.sum = selected.price * selected.orderedAmount;
 
-      var name = this.getSelectedItem().value + this.getSelectedItem().model;
+      if (_order.userOrder.exists(selected.id)) {
+        _order.userOrder.updateItem(selected.id, selected);
+      } else {
+        _order.userOrder.add(selected, -1);
+      }
+
+      var count = 0;
+
+      var a = _order.userOrder.filter(function (obj) {
+        return count += obj.orderedAmount;
+      });
+
+      $$("buttonBage").config.badge = count;
+      $$("buttonBage").refresh();
+      var name = selected.value + selected.model;
       webix.message("<b>".concat(name, "</b> has been added to your bag"));
-      this.getSelectedItem().amount = 0;
+      selected.amount = 0;
       $$("myDatatable").refresh();
     }
   },
@@ -675,8 +670,12 @@ var form = {
     value: "Checkout",
     click: function click() {
       // this.getParentView().validate();
+      //  create order progress
+      //
+      //
       $$("buttonBage").config.badge = "";
       $$("buttonBage").refresh();
+      $$("tableHistory").refresh();
       $$("tableHistory").show();
     }
   }],
@@ -728,7 +727,7 @@ var table = {
   fixedRowHeight: false,
   rowHeight: 100,
   footer: true,
-  data: _prodacts.prodacts,
+  data: _order.userOrder,
   scheme: {
     $init: function $init(obj) {
       obj.name = "".concat(obj.value, " ").concat(obj.model);
@@ -779,7 +778,16 @@ var table = {
         ok: "Delete",
         cancel: "Cancel"
       }).then(function () {
-        $$("tableOrdered").remove(id);
+        _order.userOrder.remove(id);
+
+        var count = 0;
+
+        var a = _order.userOrder.filter(function (obj) {
+          return count += obj.orderedAmount;
+        });
+
+        $$("buttonBage").config.badge = count;
+        $$("buttonBage").refresh();
       });
       return false;
     }
@@ -815,56 +823,106 @@ var pageGoods = {
   rows: [table, buttons]
 };
 exports.pageGoods = pageGoods;
-},{"./pageOrder":"views/pageOrder.js","../data/prodacts":"data/prodacts.js","../data/order":"data/order.js"}],"views/pageHistory.js":[function(require,module,exports) {
+},{"./pageOrder":"views/pageOrder.js","../data/prodacts":"data/prodacts.js","../data/order":"data/order.js"}],"data/progressOfOrder.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.progressOfOrder = void 0;
+
+var _prodacts = require("./prodacts");
+
+var progressOfOrderServer = [{
+  prodactsId: "1",
+  amount: 1,
+  address: "Minsk",
+  delivery: "Post",
+  payment: "Card",
+  orderData: "",
+  status: "In progress",
+  userId: 123
+}, {
+  prodactsId: "4",
+  amount: 2,
+  address: "Minsk",
+  delivery: "Post",
+  payment: "Card",
+  orderData: "",
+  status: "In progress",
+  userId: 123
+}];
+var progressOfOrder = new webix.DataCollection({
+  scheme: {
+    $init: function $init(obj) {
+      _prodacts.prodacts.find(function (item) {
+        if (item.id == obj.prodactsId) {
+          obj.prodact = item.value + " " + item.model;
+        }
+      });
+    }
+  },
+  data: progressOfOrderServer
+});
+exports.progressOfOrder = progressOfOrder;
+},{"./prodacts":"data/prodacts.js"}],"views/pageHistory.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.tableHistory = void 0;
+
+var _progressOfOrder = require("../data/progressOfOrder");
+
 var tableHistory = {
   view: "datatable",
   id: "tableHistory",
   css: "data_style",
   fixedRowHeight: false,
-  scheme: {
-    $init: function $init(obj) {
-      obj.name = "".concat(obj.value, " ").concat(obj.model);
-    }
-  },
-  select: true,
+  rowHeight: 50,
+  data: _progressOfOrder.progressOfOrder,
+  // scheme: {
+  //   $init: function(obj) {
+  //     obj.name = `${obj.value} ${obj.model}`;
+  //   }
+  // },
   columns: [{
-    id: "name",
-    header: "Product",
+    id: "prodact",
+    header: [{
+      text: "Prodacts"
+    }, {
+      content: "textFilter"
+    }],
     fillspace: 3
   }, {
-    id: "name",
+    id: "amount",
     header: "Amount",
     fillspace: 1
   }, {
-    id: "name",
+    id: "address",
     header: "Address",
     fillspace: 1
   }, {
-    id: "name",
+    id: "delivery",
     header: "Delivery",
     fillspace: 1
   }, {
-    id: "name",
+    id: "payment",
     header: "Payment",
     fillspace: 1
   }, {
-    id: "name",
+    id: "orderData",
     header: "Order date",
     fillspace: 2
   }, {
-    id: "name",
+    id: "status",
     header: "Status",
     fillspace: 1
   }]
 };
 exports.tableHistory = tableHistory;
-},{}],"script.js":[function(require,module,exports) {
+},{"../data/progressOfOrder":"data/progressOfOrder.js"}],"script.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -938,6 +996,9 @@ var treeNavigation = {
           return obj.value === selectedItem;
         });
       }
+    },
+    onItemClick: function onItemClick() {
+      $$("myDatatable").show();
     }
   }
 };
@@ -979,7 +1040,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "56019" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "54171" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

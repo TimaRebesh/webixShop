@@ -100,7 +100,7 @@ let prodactsServer = [
   {
     id: "9",
     value: "Nokia",
-    model: "33101",
+    model: "3310",
     price: 3800,
     rating: 110,
     orderedAmount: 0,

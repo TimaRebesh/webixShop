@@ -1,6 +1,6 @@
 import { pageOrder } from "./pageOrder";
 import { prodacts } from "../data/prodacts";
-import { userOrderer } from "../data/order";
+import { userOrder } from "../data/order";
 
 export { pageGoods, table };
 
@@ -14,7 +14,7 @@ let table = {
   fixedRowHeight: false,
   rowHeight: 100,
   footer: true,
-  data: prodacts,
+  data: userOrder,
   scheme: {
     $init: function(obj) {
       obj.name = `${obj.value} ${obj.model}`;
@@ -68,7 +68,14 @@ let table = {
           cancel: "Cancel"
         })
         .then(() => {
-          $$("tableOrdered").remove(id);
+          userOrder.remove(id);
+          let count = 0;
+          let a = userOrder.filter(function(obj) {
+            return (count += obj.orderedAmount);
+          });
+
+          $$("buttonBage").config.badge = count;
+          $$("buttonBage").refresh();
         });
       return false;
     }

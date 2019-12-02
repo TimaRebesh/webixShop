@@ -50,10 +50,6 @@ let datatable = {
         "<image class='image_buy' src='http://pngimg.com/uploads/shopping_cart/shopping_cart_PNG3.png'></image>"
     }
   ],
-  // selectedItem: function() {
-  //   return this.getSelectedItem();
-  // },
-
   type: {
     myCounter: function(obj, common, value, column, index) {
       value = 0;
@@ -76,28 +72,34 @@ let datatable = {
       $$("myDatatable").refresh();
     },
     image_buy: function() {
-      if (
-        this.getSelectedItem().amount == undefined ||
-        this.getSelectedItem().amount === 0
-      )
-        return;
+      let selected = this.getSelectedItem();
 
-      for (let i = 1; i <= this.getSelectedItem().amount; i++) {
-        this.getSelectedItem().orderedAmount = this.getSelectedItem().amount;
-        $$("buttonBage").config.badge++;
+      if (selected.amount == undefined || selected.amount === 0) return;
+
+      for (let i = 1; i <= selected.amount; i++) {
+        selected.orderedAmount = selected.amount;
       }
+
+      selected.sum = selected.price * selected.orderedAmount;
+
+      if (userOrder.exists(selected.id)) {
+        userOrder.updateItem(selected.id, selected);
+      } else {
+        userOrder.add(selected, -1);
+      }
+
+      let count = 0;
+      let a = userOrder.filter(function(obj) {
+        return (count += obj.orderedAmount);
+      });
+
+      $$("buttonBage").config.badge = count;
       $$("buttonBage").refresh();
 
-      this.getSelectedItem().sum =
-        this.getSelectedItem().price * this.getSelectedItem().orderedAmount;
-      // let selected = this.getSelectedItem();
-
-      // userOrder.order.push(selected);
-
-      let name = this.getSelectedItem().value + this.getSelectedItem().model;
+      let name = selected.value + selected.model;
       webix.message(`<b>${name}</b> has been added to your bag`);
 
-      this.getSelectedItem().amount = 0;
+      selected.amount = 0;
       $$("myDatatable").refresh();
     }
   },
