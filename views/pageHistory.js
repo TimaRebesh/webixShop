@@ -16,12 +16,12 @@ export let tableHistory = {
     {
       id: "prodact",
       header: [{ text: "Prodacts" }, { content: "textFilter" }],
-      fillspace: 3
+      fillspace: 2.5
     },
     {
       id: "amount",
       header: "Amount",
-      fillspace: 1
+      fillspace: 0.5
     },
     {
       id: "address",
@@ -39,9 +39,10 @@ export let tableHistory = {
       fillspace: 1
     },
     {
-      id: "orderData",
+      id: "orderDate",
       header: "Order date",
-      fillspace: 2
+      format: webix.Date.dateToStr("%Y-%m-%d %H:%i"),
+      fillspace: 1
     },
     {
       id: "status",

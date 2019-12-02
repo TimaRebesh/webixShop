@@ -618,15 +618,57 @@ webix.ui({
     }]
   }
 });
-},{"../data/prodacts":"data/prodacts.js","../data/order":"data/order.js","../script":"script.js"}],"views/pageOrder.js":[function(require,module,exports) {
+},{"../data/prodacts":"data/prodacts.js","../data/order":"data/order.js","../script":"script.js"}],"data/progressOfOrder.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.progressOfOrder = void 0;
+
+var _prodacts = require("./prodacts");
+
+var progressOfOrderServer = [{
+  prodactsId: "1",
+  amount: 1,
+  address: "Minsk",
+  delivery: "Post",
+  payment: "Card",
+  orderDate: new Date(2012, 11, 12),
+  status: "Declined",
+  orderUserName: "",
+  mail: "",
+  tel: "",
+  userIdLogin: 123
+}];
+var progressOfOrder = new webix.DataCollection({
+  scheme: {
+    $init: function $init(obj) {
+      _prodacts.prodacts.find(function (item) {
+        if (item.id == obj.prodactsId) {
+          obj.prodact = item.value + " " + item.model;
+        }
+      });
+    }
+  },
+  data: progressOfOrderServer
+});
+exports.progressOfOrder = progressOfOrder;
+},{"./prodacts":"data/prodacts.js"}],"views/pageOrder.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.pageOrder = void 0;
+
+var _order = require("../data/order");
+
+var _progressOfOrder = require("../data/progressOfOrder");
+
 var form = {
   view: "form",
+  id: "formСheckout",
   scroll: false,
   elements: [{
     view: "text",
@@ -651,6 +693,7 @@ var form = {
     invalidMessage: "Incorrect phone"
   }, {
     view: "combo",
+    id: "combo",
     label: "Delivery type",
     options: ["Master", "Post"]
   }, {
@@ -662,6 +705,7 @@ var form = {
     invalidMessage: "Delivery address can not be empty"
   }, {
     view: "richselect",
+    id: "richselect",
     label: "Payment type",
     options: ["Card", "Post", "Cash"]
   }, {
@@ -671,8 +715,27 @@ var form = {
     click: function click() {
       // this.getParentView().validate();
       //  create order progress
+      _order.userOrder.find(function (obj) {
+        var newObj = {};
+        newObj.prodactsId = obj.id;
+        newObj.amount = obj.orderedAmount;
+        var formValue = $$("formСheckout").getValues();
+        newObj.orderUserName = formValue.text1;
+        newObj.mail = formValue.text2;
+        newObj.tel = formValue.text3;
+        newObj.address = formValue.text4;
+        newObj.payment = $$("richselect").getValue();
+        newObj.delivery = $$("combo").getValue();
+        newObj.orderDate = new Date();
+        newObj.status = "In progress";
+
+        _progressOfOrder.progressOfOrder.add(newObj, -1);
+      }); //
       //
-      //
+
+
+      _order.userOrder.clearAll();
+
       $$("buttonBage").config.badge = "";
       $$("buttonBage").refresh();
       $$("tableHistory").refresh();
@@ -705,7 +768,7 @@ var pageOrder = {
   }]
 };
 exports.pageOrder = pageOrder;
-},{}],"views/pageGoods.js":[function(require,module,exports) {
+},{"../data/order":"data/order.js","../data/progressOfOrder":"data/progressOfOrder.js"}],"views/pageGoods.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -823,49 +886,7 @@ var pageGoods = {
   rows: [table, buttons]
 };
 exports.pageGoods = pageGoods;
-},{"./pageOrder":"views/pageOrder.js","../data/prodacts":"data/prodacts.js","../data/order":"data/order.js"}],"data/progressOfOrder.js":[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.progressOfOrder = void 0;
-
-var _prodacts = require("./prodacts");
-
-var progressOfOrderServer = [{
-  prodactsId: "1",
-  amount: 1,
-  address: "Minsk",
-  delivery: "Post",
-  payment: "Card",
-  orderData: "",
-  status: "In progress",
-  userId: 123
-}, {
-  prodactsId: "4",
-  amount: 2,
-  address: "Minsk",
-  delivery: "Post",
-  payment: "Card",
-  orderData: "",
-  status: "In progress",
-  userId: 123
-}];
-var progressOfOrder = new webix.DataCollection({
-  scheme: {
-    $init: function $init(obj) {
-      _prodacts.prodacts.find(function (item) {
-        if (item.id == obj.prodactsId) {
-          obj.prodact = item.value + " " + item.model;
-        }
-      });
-    }
-  },
-  data: progressOfOrderServer
-});
-exports.progressOfOrder = progressOfOrder;
-},{"./prodacts":"data/prodacts.js"}],"views/pageHistory.js":[function(require,module,exports) {
+},{"./pageOrder":"views/pageOrder.js","../data/prodacts":"data/prodacts.js","../data/order":"data/order.js"}],"views/pageHistory.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -894,11 +915,11 @@ var tableHistory = {
     }, {
       content: "textFilter"
     }],
-    fillspace: 3
+    fillspace: 2.5
   }, {
     id: "amount",
     header: "Amount",
-    fillspace: 1
+    fillspace: 0.5
   }, {
     id: "address",
     header: "Address",
@@ -912,9 +933,10 @@ var tableHistory = {
     header: "Payment",
     fillspace: 1
   }, {
-    id: "orderData",
+    id: "orderDate",
     header: "Order date",
-    fillspace: 2
+    format: webix.Date.dateToStr("%Y-%m-%d %H:%i"),
+    fillspace: 1
   }, {
     id: "status",
     header: "Status",

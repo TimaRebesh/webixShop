@@ -1,8 +1,11 @@
+import { userOrder } from "../data/order";
+import { progressOfOrder } from "../data/progressOfOrder";
+
 export { pageOrder };
 
 let form = {
   view: "form",
-
+  id: "formСheckout",
   scroll: false,
 
   elements: [
@@ -32,6 +35,7 @@ let form = {
     },
     {
       view: "combo",
+      id: "combo",
       label: "Delivery type",
       options: ["Master", "Post"]
     },
@@ -45,6 +49,7 @@ let form = {
     },
     {
       view: "richselect",
+      id: "richselect",
       label: "Payment type",
       options: ["Card", "Post", "Cash"]
     },
@@ -55,9 +60,27 @@ let form = {
       click: function() {
         // this.getParentView().validate();
         //  create order progress
+        userOrder.find(obj => {
+          let newObj = {};
+          newObj.prodactsId = obj.id;
+          newObj.amount = obj.orderedAmount;
 
+          let formValue = $$("formСheckout").getValues();
+
+          newObj.orderUserName = formValue.text1;
+          newObj.mail = formValue.text2;
+          newObj.tel = formValue.text3;
+          newObj.address = formValue.text4;
+          newObj.payment = $$("richselect").getValue();
+          newObj.delivery = $$("combo").getValue();
+          newObj.orderDate = new Date();
+          newObj.status = "In progress";
+
+          progressOfOrder.add(newObj, -1);
+        });
         //
         //
+        userOrder.clearAll();
         $$("buttonBage").config.badge = "";
         $$("buttonBage").refresh();
         $$("tableHistory").refresh();

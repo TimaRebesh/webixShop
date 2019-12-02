@@ -8,19 +8,12 @@ let progressOfOrderServer = [
     address: "Minsk",
     delivery: "Post",
     payment: "Card",
-    orderData: "",
-    status: "In progress",
-    userId: 123
-  },
-  {
-    prodactsId: "4",
-    amount: 2,
-    address: "Minsk",
-    delivery: "Post",
-    payment: "Card",
-    orderData: "",
-    status: "In progress",
-    userId: 123
+    orderDate: new Date(2012, 11, 12),
+    status: "Declined",
+    orderUserName: "",
+    mail: "",
+    tel: "",
+    userIdLogin: 123
   }
 ];
 
