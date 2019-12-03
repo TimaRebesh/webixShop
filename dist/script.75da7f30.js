@@ -222,7 +222,7 @@ var prodacts = new webix.DataCollection({
 exports.prodacts = prodacts;
 var phones = [{
   id: 1,
-  // open: true,
+  open: true,
   value: "Phones",
   data: []
 }];
@@ -446,7 +446,10 @@ var datatable = {
     },
     image_buy: function image_buy() {
       var selected = this.getSelectedItem();
-      if (selected.amount == undefined || selected.amount === 0) return;
+
+      if (selected.amount == undefined || selected.amount === 0) {
+        return webix.message("please, select goods");
+      }
 
       for (var i = 1; i <= selected.amount; i++) {
         selected.orderedAmount = selected.amount;
@@ -902,12 +905,8 @@ var tableHistory = {
   css: "data_style",
   fixedRowHeight: false,
   rowHeight: 50,
+  tooltip: true,
   data: _progressOfOrder.progressOfOrder,
-  // scheme: {
-  //   $init: function(obj) {
-  //     obj.name = `${obj.value} ${obj.model}`;
-  //   }
-  // },
   columns: [{
     id: "prodact",
     header: [{
@@ -919,32 +918,285 @@ var tableHistory = {
   }, {
     id: "amount",
     header: "Amount",
-    fillspace: 0.5
+    fillspace: 0.5,
+    tooltip: false
   }, {
     id: "address",
     header: "Address",
-    fillspace: 1
+    fillspace: 1,
+    tooltip: false
   }, {
     id: "delivery",
     header: "Delivery",
-    fillspace: 1
+    fillspace: 1,
+    tooltip: false
   }, {
     id: "payment",
     header: "Payment",
-    fillspace: 1
+    fillspace: 1,
+    tooltip: false
   }, {
     id: "orderDate",
     header: "Order date",
     format: webix.Date.dateToStr("%Y-%m-%d %H:%i"),
-    fillspace: 1
+    fillspace: 1,
+    tooltip: false
   }, {
-    id: "status",
     header: "Status",
-    fillspace: 1
-  }]
+    template: "{common.status()}",
+    fillspace: 1,
+    tooltip: "click to see the reason"
+  }],
+  type: {
+    status: function status(obj) {
+      if (obj.status !== "Declined") {
+        return obj.status;
+      }
+
+      return "\n              <button type='button' class='button_status' tabindex='-1' >".concat(obj.status, "</button>\n              ");
+    }
+  },
+  onClick: {
+    button_status: function button_status() {
+      $$("windowProgress").show();
+    }
+  }
 };
 exports.tableHistory = tableHistory;
-},{"../data/progressOfOrder":"data/progressOfOrder.js"}],"script.js":[function(require,module,exports) {
+webix.ui({
+  view: "window",
+  id: "windowProgress",
+  modal: true,
+  position: "center",
+  head: {
+    view: "toolbar",
+    type: "clean",
+    css: "webix_primary",
+    elements: [{
+      template: "Decline reason",
+      css: "window_toolbar_progress"
+    }, {
+      view: "icon",
+      icon: "mdi mdi-close",
+      css: "alter",
+      hotkey: "esc",
+      click: function click() {
+        $$("windowProgress").hide();
+      }
+    }]
+  },
+  body: {
+    template: "<p class=\"window_progress_text\">Product was lost</p>"
+  }
+});
+},{"../data/progressOfOrder":"data/progressOfOrder.js"}],"data/usersInfo.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.usersInfo = void 0;
+var usersInfoServer = [{
+  userId: 1,
+  name: "James",
+  email: "a",
+  password: 1
+}, {
+  userId: 2,
+  firstname: "Dilan",
+  email: "bobmail@gmail.com",
+  password: 2
+}];
+var usersInfo = new webix.DataCollection({
+  data: usersInfoServer
+});
+exports.usersInfo = usersInfo;
+},{}],"views/authorizationPage.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.authorization = void 0;
+
+var _usersInfo = require("../data/usersInfo");
+
+var toolbar = {
+  view: "toolbar",
+  id: "toolbarAuthorization",
+  padding: 3,
+  elements: [{
+    view: "label",
+    label: "<span class='label_color'>Phone Shop</span>"
+  }, {}, {
+    view: "button",
+    label: "Login",
+    width: 90,
+    click: function click() {}
+  }, {
+    view: "button",
+    label: "Register",
+    width: 150,
+    click: function click() {
+      $$("windowRegister").show();
+    }
+  }]
+};
+var authorization = {
+  id: "authorization",
+  rows: [toolbar]
+};
+exports.authorization = authorization;
+webix.ui({
+  view: "window",
+  id: "windowRegister",
+  modal: true,
+  position: "center",
+  label: {
+    width: 140
+  },
+  head: {
+    view: "toolbar",
+    type: "clean",
+    // css: "window_toolbar",
+    cols: [{
+      template: "Register",
+      css: "window_toolbar_progress"
+    }, {
+      view: "icon",
+      icon: "mdi mdi-close",
+      css: "alter",
+      hotkey: "esc",
+      click: function click() {
+        $$("windowRegister").hide();
+      }
+    }]
+  },
+  body: {
+    type: "clean",
+    cols: [{
+      width: 100
+    }, {
+      view: "form",
+      id: "formInWindowRegister",
+      width: 500,
+      elementsConfig: {
+        labelWidth: 150
+      },
+      elements: [{
+        view: "text",
+        label: "Name",
+        type: "text",
+        name: "name",
+        attributes: {
+          required: "true",
+          title: "Enter your name",
+          maxlength: 22
+        }
+      }, {
+        view: "text",
+        type: "email",
+        value: "newuser@gmail.com",
+        label: "E-Mail Address",
+        id: "email",
+        name: "mail",
+        attributes: {
+          required: "true",
+          title: "Enter your email"
+        },
+        invalidMessage: ""
+      }, {
+        view: "text",
+        id: "password",
+        label: "Password",
+        name: "password",
+        attributes: {
+          required: "true",
+          title: "Create your password"
+        },
+        invalidMessage: "The password confirmation does not match"
+      }, {
+        view: "text",
+        id: "comfPassword",
+        label: "Confirm Password",
+        name: "confPassword",
+        attributes: {
+          required: "true",
+          title: "repeat password"
+        },
+        invalidMessage: ""
+      }, {
+        cols: [{
+          width: 150
+        }, {
+          view: "button",
+          value: "Register",
+          css: "webix_primary",
+          width: 150,
+          click: function click() {
+            var form = $$("formInWindowRegister");
+
+            if (form.validate()) {
+              // create userInsfo
+              var values = form.getValues();
+              console.log(values);
+              var newObj = {};
+
+              var arr = _usersInfo.usersInfo.serialize();
+
+              var lastId = arr[arr.length - 1].userId;
+              var newId = lastId + 1;
+              newObj.userId = newId;
+              newObj.name = values.name;
+              newObj.email = values.mail;
+              newObj.password = values.password;
+
+              _usersInfo.usersInfo.add(newObj, -1); //
+
+
+              $$("windowRegister").hide();
+              $$("shopPage").show();
+            } else {
+              return;
+            }
+          }
+        }, {}]
+      }],
+      rules: {
+        name: webix.rules.isNotEmpty,
+        mail: function mail(value) {
+          var flag = 0;
+
+          _usersInfo.usersInfo.find(function (obj) {
+            if (obj.email == value) {
+              $$("email").config.invalidMessage = "The email has already been taken";
+              flag = 1;
+            } else {
+              $$("email").config.invalidMessage = "The email is not correct";
+            }
+          });
+
+          return webix.rules.isEmail(value) && flag != 1;
+        },
+        password: function password(value) {
+          return webix.rules.isNotEmpty(value) && value != "" && value == $$("comfPassword").getValue();
+        },
+        confPassword: function confPassword(value) {
+          var password = $$("password").getValue();
+
+          if (value != password) {
+            $$("comfPassword").config.value = "";
+          }
+
+          return webix.rules.isNotEmpty(value) && value == password;
+        }
+      }
+    }, {
+      width: 100
+    }]
+  }
+});
+},{"../data/usersInfo":"data/usersInfo.js"}],"script.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -962,6 +1214,8 @@ var _pageOrder = require("./views/pageOrder");
 
 var _pageHistory = require("./views/pageHistory");
 
+var _authorizationPage = require("./views/authorizationPage");
+
 var toolbar = {
   view: "toolbar",
   id: "toolbar",
@@ -969,22 +1223,11 @@ var toolbar = {
   padding: 3,
   elements: [{
     view: "label",
-    label: "Phone Shop"
+    label: "<span class='label_color'>Phone Shop</span>"
   }, {}, {
     view: "label",
-    label: "Hi, user!"
+    label: "<span class='label_color'>Hi, user!</span>"
   }, {}, {
-    view: "button",
-    label: "Logout",
-    width: 150
-  }, {
-    view: "button",
-    label: "History",
-    width: 150,
-    click: function click() {
-      $$("tableHistory").show();
-    }
-  }, {
     view: "button",
     label: "Bag",
     id: "buttonBage",
@@ -996,6 +1239,20 @@ var toolbar = {
       });
       $$("tableOrdered").refresh();
       $$("pageGoods").show();
+    }
+  }, {
+    view: "button",
+    label: "History",
+    width: 150,
+    click: function click() {
+      $$("tableHistory").show();
+    }
+  }, {
+    view: "button",
+    label: "Logout",
+    width: 150,
+    click: function click() {
+      $$("authorization").show();
     }
   }]
 };
@@ -1024,17 +1281,22 @@ var treeNavigation = {
     }
   }
 };
+var shopPage = {
+  id: "shopPage",
+  rows: [toolbar, {
+    cols: [treeNavigation, {
+      animate: false,
+      cells: [_datatable.datatable, _pageGoods.pageGoods, _pageOrder.pageOrder, _pageHistory.tableHistory]
+    }]
+  }]
+};
 webix.ready(function () {
   webix.ui({
-    rows: [toolbar, {
-      cols: [treeNavigation, {
-        animate: false,
-        cells: [_datatable.datatable, _pageGoods.pageGoods, _pageOrder.pageOrder, _pageHistory.tableHistory]
-      }]
-    }]
+    animate: false,
+    cells: [_authorizationPage.authorization, shopPage]
   });
 });
-},{"./data/prodacts":"data/prodacts.js","./views/datatable":"views/datatable.js","./views/pageGoods":"views/pageGoods.js","./views/pageOrder":"views/pageOrder.js","./views/pageHistory":"views/pageHistory.js"}],"C:/Users/User/AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"./data/prodacts":"data/prodacts.js","./views/datatable":"views/datatable.js","./views/pageGoods":"views/pageGoods.js","./views/pageOrder":"views/pageOrder.js","./views/pageHistory":"views/pageHistory.js","./views/authorizationPage":"views/authorizationPage.js"}],"C:/Users/User/AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -1062,7 +1324,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "54171" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "56392" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

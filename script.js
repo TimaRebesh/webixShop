@@ -3,6 +3,7 @@ import { datatable } from "./views/datatable";
 import { pageGoods, table } from "./views/pageGoods";
 import { pageOrder } from "./views/pageOrder";
 import { tableHistory } from "./views/pageHistory";
+import { authorization } from "./views/authorizationPage";
 
 export { toolbar };
 
@@ -14,20 +15,14 @@ const toolbar = {
   elements: [
     {
       view: "label",
-      label: "Phone Shop"
+      label: "<span class='label_color'>Phone Shop</span>"
     },
     {},
-    { view: "label", label: "Hi, user!" },
-    {},
-    { view: "button", label: "Logout", width: 150 },
     {
-      view: "button",
-      label: "History",
-      width: 150,
-      click: function() {
-        $$("tableHistory").show();
-      }
+      view: "label",
+      label: "<span class='label_color'>Hi, user!</span>"
     },
+    {},
     {
       view: "button",
       label: "Bag",
@@ -40,6 +35,22 @@ const toolbar = {
         });
         $$("tableOrdered").refresh();
         $$("pageGoods").show();
+      }
+    },
+    {
+      view: "button",
+      label: "History",
+      width: 150,
+      click: function() {
+        $$("tableHistory").show();
+      }
+    },
+    {
+      view: "button",
+      label: "Logout",
+      width: 150,
+      click: function() {
+        $$("authorization").show();
       }
     }
   ]
@@ -69,19 +80,25 @@ const treeNavigation = {
   }
 };
 
+let shopPage = {
+  id: "shopPage",
+  rows: [
+    toolbar,
+    {
+      cols: [
+        treeNavigation,
+        {
+          animate: false,
+          cells: [datatable, pageGoods, pageOrder, tableHistory]
+        }
+      ]
+    }
+  ]
+};
+
 webix.ready(function() {
   webix.ui({
-    rows: [
-      toolbar,
-      {
-        cols: [
-          treeNavigation,
-          {
-            animate: false,
-            cells: [datatable, pageGoods, pageOrder, tableHistory]
-          }
-        ]
-      }
-    ]
+    animate: false,
+    cells: [authorization, shopPage]
   });
 });

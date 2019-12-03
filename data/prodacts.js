@@ -116,7 +116,7 @@ let prodacts = new webix.DataCollection({ data: prodactsServer });
 let phones = [
   {
     id: 1,
-    // open: true,
+    open: true,
     value: "Phones",
     data: []
   }

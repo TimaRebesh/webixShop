@@ -74,7 +74,9 @@ let datatable = {
     image_buy: function() {
       let selected = this.getSelectedItem();
 
-      if (selected.amount == undefined || selected.amount === 0) return;
+      if (selected.amount == undefined || selected.amount === 0) {
+        return webix.message("please, select goods");
+      }
 
       for (let i = 1; i <= selected.amount; i++) {
         selected.orderedAmount = selected.amount;

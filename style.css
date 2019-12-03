@@ -3,6 +3,12 @@
   color: #ffffff;
 }
 
+.label_color {
+  color: #f3f3f3;
+  font-size: 18px;
+  padding-left: 10px;
+}
+
 .data_style .webix_hcell {
   border-bottom: 1px solid #dddddb;
   border-right: 1px solid #dddddb;
@@ -91,4 +97,24 @@
   color: #ffffff;
   border-top-right-radius: 20%;
   border-bottom-right-radius: 20%;
+}
+
+.button_status {
+  background-color: #ffffff;
+  font-size: 14px;
+  color: #686868;
+  text-align: left;
+  width: 100px;
+  height: 40px;
+  border: 3px solid #262727;
+}
+
+.window_progress_text {
+  font-size: 18px;
+}
+
+.window_toolbar_progress {
+  background-color: #569fcf;
+  color: #ffffff;
+  padding-top: 6px;
 }
