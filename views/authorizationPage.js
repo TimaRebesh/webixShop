@@ -1,4 +1,4 @@
-import { usersInfo } from "../data/usersInfo";
+import { usersInfo, currentUser } from "../data/usersInfo";
 
 export { authorization };
 
@@ -16,7 +16,9 @@ const toolbar = {
       view: "button",
       label: "Login",
       width: 90,
-      click: function() {}
+      click: function() {
+        $$("windowLogin").show();
+      }
     },
     {
       view: "button",
@@ -29,10 +31,124 @@ const toolbar = {
   ]
 };
 
-let authorization = {
-  id: "authorization",
-  rows: [toolbar]
-};
+webix
+  .ui({
+    view: "window",
+    id: "windowLogin",
+    modal: true,
+    position: "center",
+    //   label: {
+    //     width: 140
+    //   },
+    head: {
+      view: "toolbar",
+      type: "clean",
+      cols: [
+        { template: "Login", css: "window_toolbar_progress" },
+        {
+          view: "icon",
+          icon: "mdi mdi-close",
+          css: "alter",
+          hotkey: "esc",
+          click: function() {
+            $$("windowLogin").hide();
+          }
+        }
+      ]
+    },
+    body: {
+      type: "clean",
+      cols: [
+        { width: 100 },
+        {
+          view: "form",
+          id: "formWindowLogin",
+          width: 500,
+          elementsConfig: {
+            labelWidth: 150
+          },
+          elements: [
+            {
+              view: "text",
+              id: "emailLogin",
+              // type: "email",
+              value: "james@gmail.com",
+              label: "E-Mail Address",
+              name: "email",
+              attributes: {
+                required: "true",
+                title: "Enter your email"
+              }
+            },
+            {
+              view: "text",
+              type: "password",
+              id: "passwordLogin",
+              label: "Password",
+              name: "password",
+              attributes: {
+                required: "true",
+                title: "Enter your password"
+              }
+            },
+            {
+              cols: [
+                { width: 150 },
+                {
+                  rows: [
+                    {
+                      view: "checkbox",
+                      label: "Remember me",
+                      width: 600
+                      // height: 69
+                    },
+                    {
+                      cols: [
+                        {
+                          view: "button",
+                          value: "Login",
+                          css: "webix_primary",
+                          width: 120,
+                          click: function() {
+                            const values = $$("formWindowLogin").getValues();
+                            let fined = false;
+                            usersInfo.find(obj => {
+                              //currentUser;
+
+                              if (
+                                values.email == obj.email &&
+                                values.password == obj.password
+                              ) {
+                                fined = true;
+                                currentUser.clearAll();
+                                currentUser.add(obj);
+                                $$("labelShowName").refresh();
+                                $$("formWindowLogin").clear();
+                                $$("windowLogin").hide();
+                                $$("shopPage").show();
+                              }
+                            });
+                            if (fined === false) {
+                              webix.message("no match! Try again");
+                              $$("passwordLogin").config.value = "";
+                              $$("passwordLogin").refresh();
+                            }
+                          }
+                        },
+                        { template: "Forgot your Password?" }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        { width: 100 }
+      ]
+    }
+  })
+  .show();
 
 webix.ui({
   view: "window",
@@ -97,6 +213,7 @@ webix.ui({
           },
           {
             view: "text",
+            type: "password",
             id: "password",
             label: "Password",
             name: "password",
@@ -108,6 +225,7 @@ webix.ui({
           },
           {
             view: "text",
+            type: "password",
             id: "comfPassword",
             label: "Confirm Password",
             name: "confPassword",
@@ -130,7 +248,7 @@ webix.ui({
                   if (form.validate()) {
                     // create userInsfo
                     const values = form.getValues();
-                    console.log(values);
+
                     let newObj = {};
 
                     const arr = usersInfo.serialize();
@@ -143,7 +261,11 @@ webix.ui({
                     newObj.password = values.password;
 
                     usersInfo.add(newObj, -1);
+                    currentUser.clearAll();
+                    currentUser.add(newObj);
+                    $$("labelShowName").refresh();
                     //
+                    $$("formInWindowRegister").clear();
                     $$("windowRegister").hide();
                     $$("shopPage").show();
                   } else {
@@ -190,3 +312,8 @@ webix.ui({
     ]
   }
 });
+
+let authorization = {
+  id: "authorization",
+  rows: [toolbar]
+};

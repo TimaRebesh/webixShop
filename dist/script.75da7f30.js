@@ -431,7 +431,7 @@ var datatable = {
   type: {
     myCounter: function myCounter(obj, common, value, column, index) {
       value = 0;
-      return "<div class='webix_el_group'>\n              <button type='button' class='webix_inp_counter_prev' tabindex='-1' >-</button>\n              \n              <input type='text' readonly class='webix_inp_counter_value' value=".concat(obj.amount, "></input>\n              <button type='button' class='webix_inp_counter_next' tabindex='-1'>+</button>\n              </div>");
+      return "<div class='webix_el_group buttons_counter'>\n              <button type='button' class='webix_inp_counter_prev' tabindex='-1' >-</button>\n              \n              <input type='text' readonly class='webix_inp_counter_value' value=".concat(obj.amount, "></input>\n              <button type='button' class='webix_inp_counter_next' tabindex='-1'>+</button>\n              </div>");
     }
   },
   onClick: {
@@ -642,7 +642,7 @@ var progressOfOrderServer = [{
   orderUserName: "",
   mail: "",
   tel: "",
-  userIdLogin: 123
+  userId: 1
 }];
 var progressOfOrder = new webix.DataCollection({
   scheme: {
@@ -995,11 +995,11 @@ webix.ui({
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.usersInfo = void 0;
+exports.currentUser = exports.usersInfo = void 0;
 var usersInfoServer = [{
   userId: 1,
   name: "James",
-  email: "a",
+  email: "james@gmail.com",
   password: 1
 }, {
   userId: 2,
@@ -1011,6 +1011,13 @@ var usersInfo = new webix.DataCollection({
   data: usersInfoServer
 });
 exports.usersInfo = usersInfo;
+var exam = [{
+  name: "some"
+}];
+var currentUser = new webix.DataCollection({
+  data: exam
+});
+exports.currentUser = currentUser;
 },{}],"views/authorizationPage.js":[function(require,module,exports) {
 "use strict";
 
@@ -1032,7 +1039,9 @@ var toolbar = {
     view: "button",
     label: "Login",
     width: 90,
-    click: function click() {}
+    click: function click() {
+      $$("windowLogin").show();
+    }
   }, {
     view: "button",
     label: "Register",
@@ -1042,11 +1051,114 @@ var toolbar = {
     }
   }]
 };
-var authorization = {
-  id: "authorization",
-  rows: [toolbar]
-};
-exports.authorization = authorization;
+webix.ui({
+  view: "window",
+  id: "windowLogin",
+  modal: true,
+  position: "center",
+  //   label: {
+  //     width: 140
+  //   },
+  head: {
+    view: "toolbar",
+    type: "clean",
+    cols: [{
+      template: "Login",
+      css: "window_toolbar_progress"
+    }, {
+      view: "icon",
+      icon: "mdi mdi-close",
+      css: "alter",
+      hotkey: "esc",
+      click: function click() {
+        $$("windowLogin").hide();
+      }
+    }]
+  },
+  body: {
+    type: "clean",
+    cols: [{
+      width: 100
+    }, {
+      view: "form",
+      id: "formWindowLogin",
+      width: 500,
+      elementsConfig: {
+        labelWidth: 150
+      },
+      elements: [{
+        view: "text",
+        id: "emailLogin",
+        // type: "email",
+        value: "james@gmail.com",
+        label: "E-Mail Address",
+        name: "email",
+        attributes: {
+          required: "true",
+          title: "Enter your email"
+        }
+      }, {
+        view: "text",
+        type: "password",
+        id: "passwordLogin",
+        label: "Password",
+        name: "password",
+        attributes: {
+          required: "true",
+          title: "Enter your password"
+        }
+      }, {
+        cols: [{
+          width: 150
+        }, {
+          rows: [{
+            view: "checkbox",
+            label: "Remember me",
+            width: 600 // height: 69
+
+          }, {
+            cols: [{
+              view: "button",
+              value: "Login",
+              css: "webix_primary",
+              width: 120,
+              click: function click() {
+                var values = $$("formWindowLogin").getValues();
+                var fined = false;
+
+                _usersInfo.usersInfo.find(function (obj) {
+                  //currentUser;
+                  if (values.email == obj.email && values.password == obj.password) {
+                    fined = true;
+
+                    _usersInfo.currentUser.clearAll();
+
+                    _usersInfo.currentUser.add(obj);
+
+                    $$("labelShowName").refresh();
+                    $$("formWindowLogin").clear();
+                    $$("windowLogin").hide();
+                    $$("shopPage").show();
+                  }
+                });
+
+                if (fined === false) {
+                  webix.message("no match! Try again");
+                  $$("passwordLogin").config.value = "";
+                  $$("passwordLogin").refresh();
+                }
+              }
+            }, {
+              template: "Forgot your Password?"
+            }]
+          }]
+        }]
+      }]
+    }, {
+      width: 100
+    }]
+  }
+}).show();
 webix.ui({
   view: "window",
   id: "windowRegister",
@@ -1107,6 +1219,7 @@ webix.ui({
         invalidMessage: ""
       }, {
         view: "text",
+        type: "password",
         id: "password",
         label: "Password",
         name: "password",
@@ -1117,6 +1230,7 @@ webix.ui({
         invalidMessage: "The password confirmation does not match"
       }, {
         view: "text",
+        type: "password",
         id: "comfPassword",
         label: "Confirm Password",
         name: "confPassword",
@@ -1139,7 +1253,6 @@ webix.ui({
             if (form.validate()) {
               // create userInsfo
               var values = form.getValues();
-              console.log(values);
               var newObj = {};
 
               var arr = _usersInfo.usersInfo.serialize();
@@ -1151,9 +1264,15 @@ webix.ui({
               newObj.email = values.mail;
               newObj.password = values.password;
 
-              _usersInfo.usersInfo.add(newObj, -1); //
+              _usersInfo.usersInfo.add(newObj, -1);
 
+              _usersInfo.currentUser.clearAll();
 
+              _usersInfo.currentUser.add(newObj);
+
+              $$("labelShowName").refresh(); //
+
+              $$("formInWindowRegister").clear();
               $$("windowRegister").hide();
               $$("shopPage").show();
             } else {
@@ -1196,6 +1315,11 @@ webix.ui({
     }]
   }
 });
+var authorization = {
+  id: "authorization",
+  rows: [toolbar]
+};
+exports.authorization = authorization;
 },{"../data/usersInfo":"data/usersInfo.js"}],"script.js":[function(require,module,exports) {
 "use strict";
 
@@ -1216,6 +1340,8 @@ var _pageHistory = require("./views/pageHistory");
 
 var _authorizationPage = require("./views/authorizationPage");
 
+var _usersInfo = require("./data/usersInfo");
+
 var toolbar = {
   view: "toolbar",
   id: "toolbar",
@@ -1226,7 +1352,12 @@ var toolbar = {
     label: "<span class='label_color'>Phone Shop</span>"
   }, {}, {
     view: "label",
-    label: "<span class='label_color'>Hi, user!</span>"
+    id: "labelShowName",
+    template: function template(obj) {
+      var item = _usersInfo.currentUser.serialize();
+
+      return "<span class='label_color templ_position'>Hi ".concat(item[0].name, "!</span>");
+    }
   }, {}, {
     view: "button",
     label: "Bag",
@@ -1296,7 +1427,7 @@ webix.ready(function () {
     cells: [_authorizationPage.authorization, shopPage]
   });
 });
-},{"./data/prodacts":"data/prodacts.js","./views/datatable":"views/datatable.js","./views/pageGoods":"views/pageGoods.js","./views/pageOrder":"views/pageOrder.js","./views/pageHistory":"views/pageHistory.js","./views/authorizationPage":"views/authorizationPage.js"}],"C:/Users/User/AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"./data/prodacts":"data/prodacts.js","./views/datatable":"views/datatable.js","./views/pageGoods":"views/pageGoods.js","./views/pageOrder":"views/pageOrder.js","./views/pageHistory":"views/pageHistory.js","./views/authorizationPage":"views/authorizationPage.js","./data/usersInfo":"data/usersInfo.js"}],"C:/Users/User/AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;

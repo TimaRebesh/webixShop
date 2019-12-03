@@ -4,6 +4,7 @@ import { pageGoods, table } from "./views/pageGoods";
 import { pageOrder } from "./views/pageOrder";
 import { tableHistory } from "./views/pageHistory";
 import { authorization } from "./views/authorizationPage";
+import { currentUser } from "./data/usersInfo";
 
 export { toolbar };
 
@@ -20,7 +21,11 @@ const toolbar = {
     {},
     {
       view: "label",
-      label: "<span class='label_color'>Hi, user!</span>"
+      id: "labelShowName",
+      template: obj => {
+        let item = currentUser.serialize();
+        return `<span class='label_color templ_position'>Hi ${item[0].name}!</span>`;
+      }
     },
     {},
     {

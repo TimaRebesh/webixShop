@@ -1,10 +1,10 @@
-export { usersInfo };
+export { usersInfo, currentUser };
 
 const usersInfoServer = [
   {
     userId: 1,
     name: "James",
-    email: "a",
+    email: "james@gmail.com",
     password: 1
   },
   {
@@ -16,3 +16,7 @@ const usersInfoServer = [
 ];
 
 let usersInfo = new webix.DataCollection({ data: usersInfoServer });
+
+let exam = [{ name: "some" }];
+
+let currentUser = new webix.DataCollection({ data: exam });

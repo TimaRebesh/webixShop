@@ -53,7 +53,7 @@ let datatable = {
   type: {
     myCounter: function(obj, common, value, column, index) {
       value = 0;
-      return `<div class='webix_el_group'>
+      return `<div class='webix_el_group buttons_counter'>
               <button type='button' class='webix_inp_counter_prev' tabindex='-1' >-</button>
               
               <input type='text' readonly class='webix_inp_counter_value' value=${obj.amount}></input>

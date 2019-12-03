@@ -4,9 +4,14 @@
 }
 
 .label_color {
-  color: #f3f3f3;
+  color: #ffffff;
   font-size: 18px;
   padding-left: 10px;
+}
+
+.templ_position {
+  font-size: 20px;
+  padding-top: 5px;
 }
 
 .data_style .webix_hcell {
@@ -74,7 +79,7 @@
   size: 100px;
 }
 
-.webix_el_group {
+.buttons_counter {
   width: 80px;
   height: 32px;
   padding-top: 35px;
