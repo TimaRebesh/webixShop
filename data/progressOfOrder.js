@@ -1,9 +1,7 @@
 import { prodacts } from "./prodacts";
 import { currentUser } from "./usersInfo";
 
-export { progressOfOrder };
-
-let progressOfOrderServer = [
+const progressOfOrderServer = [
   {
     prodactsId: 1,
     amount: 1,
@@ -36,7 +34,7 @@ let progressOfOrder = new webix.DataCollection({
   scheme: {
     $init: obj => {
       prodacts.find(function(item) {
-        if (item.id == obj.prodactsId) {
+        if (item.id === obj.prodactsId) {
           obj.prodact = item.value + " " + item.model;
         }
       });
@@ -44,3 +42,5 @@ let progressOfOrder = new webix.DataCollection({
   },
   data: progressOfOrderServer
 });
+
+export { progressOfOrder };

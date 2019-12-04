@@ -1,7 +1,5 @@
 import { usersInfo, currentUser } from "../data/usersInfo";
 
-export { windowLogin };
-
 let windowLogin = webix.ui({
   view: "window",
   id: "windowLogin",
@@ -187,3 +185,5 @@ webix.ui({
     state.top = 100;
   }
 });
+
+export { windowLogin };

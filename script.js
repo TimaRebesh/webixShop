@@ -7,8 +7,6 @@ import { authorization } from "./views/authorizationPage";
 import { currentUser } from "./data/usersInfo";
 import { progressOfOrder } from "./data/progressOfOrder";
 
-export { toolbar };
-
 const toolbar = {
   view: "toolbar",
   id: "toolbar",
@@ -124,3 +122,5 @@ function filterData() {
     }
   });
 }
+
+export { toolbar };

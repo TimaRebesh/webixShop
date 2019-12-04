@@ -1,6 +1,4 @@
-export { prodacts, phones };
-
-let prodactsServer = [
+const prodactsServer = [
   {
     id: "1",
     value: "Samsung",
@@ -217,3 +215,5 @@ prodactsServer.forEach(obj => {
   }
   idSecondNum = 0;
 });
+
+export { prodacts, phones };

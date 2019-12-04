@@ -2,8 +2,6 @@ import { prodacts, prodactsDC } from "../data/prodacts";
 import { userOrder } from "../data/order";
 import { toolbar } from "../script";
 
-export { datatable };
-
 const defaultPhoto =
   "https://docplayer.ru/docs-images/61/45953296/images/5-2.png";
 
@@ -262,3 +260,5 @@ webix.ui({
     ]
   }
 });
+
+export { datatable };

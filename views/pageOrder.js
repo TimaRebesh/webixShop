@@ -2,8 +2,6 @@ import { userOrder } from "../data/order";
 import { progressOfOrder } from "../data/progressOfOrder";
 import { currentUser } from "../data/usersInfo";
 
-export { pageOrder };
-
 let form = {
   view: "form",
   id: "formСheckout",
@@ -111,3 +109,5 @@ let pageOrder = {
     { maxWidth: 650 }
   ]
 };
+
+export { pageOrder };

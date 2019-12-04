@@ -692,7 +692,7 @@ var progressOfOrder = new webix.DataCollection({
   scheme: {
     $init: function $init(obj) {
       _prodacts.prodacts.find(function (item) {
-        if (item.id == obj.prodactsId) {
+        if (item.id === obj.prodactsId) {
           obj.prodact = item.value + " " + item.model;
         }
       });

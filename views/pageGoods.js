@@ -2,8 +2,6 @@ import { pageOrder } from "./pageOrder";
 import { prodacts } from "../data/prodacts";
 import { userOrder } from "../data/order";
 
-export { pageGoods, table };
-
 const defaultPhoto =
   "https://docplayer.ru/docs-images/61/45953296/images/5-2.png";
 
@@ -114,3 +112,5 @@ let pageGoods = {
   id: "pageGoods",
   rows: [table, buttons]
 };
+
+export { pageGoods, table };

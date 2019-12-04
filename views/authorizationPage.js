@@ -1,8 +1,6 @@
 import { usersInfo, currentUser } from "../data/usersInfo";
 import { windowLogin } from "./autPageLogin";
 
-export { authorization };
-
 const toolbar = {
   view: "toolbar",
   id: "toolbarAuthorization",
@@ -201,3 +199,5 @@ let authorization = {
   id: "authorization",
   rows: [toolbar]
 };
+
+export { authorization };

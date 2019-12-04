@@ -1,5 +1,3 @@
-export { usersInfo, currentUser };
-
 const usersInfoServer = [
   {
     userId: 1,
@@ -17,6 +15,8 @@ const usersInfoServer = [
 
 let usersInfo = new webix.DataCollection({ data: usersInfoServer });
 
-let exam = [{ name: "user", userId: 0 }];
+const exam = [{ name: "user", userId: 0 }];
 
 let currentUser = new webix.DataCollection({ data: exam });
+
+export { usersInfo, currentUser };

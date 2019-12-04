@@ -1,5 +1,5 @@
 {
-  "name": "GrokWebix",
+  "name": "WebixShop",
   "version": "1.0.0",
   "description": "",
   "main": "datatable.js",
@@ -11,5 +11,10 @@
   "license": "ISC",
   "dependencies": {
     "@mdi/font": "^4.6.95"
+  },
+  "devDependencies": {
+    "eslint": "^6.7.2",
+    "eslint-config-xbsoftware": "git+https://bitbucket.org/xbsltd/eslint.git#v3.0.0",
+    "eslint-plugin-import": "^2.18.2"
   }
 }
