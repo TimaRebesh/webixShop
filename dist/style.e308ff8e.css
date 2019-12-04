@@ -11,7 +11,8 @@
 
 .templ_position {
   font-size: 20px;
-  padding-top: 5px;
+  position: absolute;
+  padding-top: 7px;
 }
 
 .data_style .webix_hcell {
@@ -122,6 +123,17 @@
   background-color: #569fcf;
   color: #ffffff;
   padding-top: 6px;
+}
+
+.template_login {
+  font-size: 15px;
+  padding-top: 5px;
+  padding-left: 20px;
+  color: #2d78be;
+}
+
+.button_reset {
+  padding-left: 120px;
 }
 
 

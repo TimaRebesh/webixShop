@@ -17,6 +17,6 @@ const usersInfoServer = [
 
 let usersInfo = new webix.DataCollection({ data: usersInfoServer });
 
-let exam = [{ name: "some" }];
+let exam = [{ name: "user", userId: 0 }];
 
 let currentUser = new webix.DataCollection({ data: exam });

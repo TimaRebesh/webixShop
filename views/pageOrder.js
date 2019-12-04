@@ -1,5 +1,6 @@
 import { userOrder } from "../data/order";
 import { progressOfOrder } from "../data/progressOfOrder";
+import { currentUser } from "../data/usersInfo";
 
 export { pageOrder };
 
@@ -66,6 +67,7 @@ let form = {
           newObj.amount = obj.orderedAmount;
 
           let formValue = $$("formСheckout").getValues();
+          let item = currentUser.serialize();
 
           newObj.orderUserName = formValue.text1;
           newObj.mail = formValue.text2;
@@ -75,6 +77,7 @@ let form = {
           newObj.delivery = $$("combo").getValue();
           newObj.orderDate = new Date();
           newObj.status = "In progress";
+          newObj.userId = item[0].userId;
 
           progressOfOrder.add(newObj, -1);
         });

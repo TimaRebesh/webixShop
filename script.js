@@ -5,6 +5,7 @@ import { pageOrder } from "./views/pageOrder";
 import { tableHistory } from "./views/pageHistory";
 import { authorization } from "./views/authorizationPage";
 import { currentUser } from "./data/usersInfo";
+import { progressOfOrder } from "./data/progressOfOrder";
 
 export { toolbar };
 
@@ -16,7 +17,10 @@ const toolbar = {
   elements: [
     {
       view: "label",
-      label: "<span class='label_color'>Phone Shop</span>"
+      label: "<span class='label_color'>Phone Shop</span>",
+      click: function() {
+        $$("myDatatable").show();
+      }
     },
     {},
     {
@@ -33,7 +37,7 @@ const toolbar = {
       label: "Bag",
       id: "buttonBage",
       badge: "",
-      width: 90,
+      width: 120,
       click: function() {
         $$("tableOrdered").filter(function(obj) {
           return obj.orderedAmount > 0;
@@ -45,17 +49,21 @@ const toolbar = {
     {
       view: "button",
       label: "History",
-      width: 150,
+      width: 120,
       click: function() {
+        filterData();
+        $$("tableHistory").refresh();
         $$("tableHistory").show();
       }
     },
     {
       view: "button",
       label: "Logout",
-      width: 150,
+      width: 120,
       click: function() {
+        $$("myDatatable").show();
         $$("authorization").show();
+        $$("tableHistory").clearAll();
       }
     }
   ]
@@ -107,3 +115,12 @@ webix.ready(function() {
     cells: [authorization, shopPage]
   });
 });
+
+function filterData() {
+  progressOfOrder.filter(function(obj) {
+    const item = currentUser.serialize();
+    if (obj.userId == item[0].userId) {
+      return obj;
+    }
+  });
+}

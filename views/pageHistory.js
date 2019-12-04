@@ -1,4 +1,5 @@
 import { progressOfOrder } from "../data/progressOfOrder";
+import { currentUser } from "../data/usersInfo";
 
 export let tableHistory = {
   view: "datatable",

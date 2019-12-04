@@ -621,7 +621,37 @@ webix.ui({
     }]
   }
 });
-},{"../data/prodacts":"data/prodacts.js","../data/order":"data/order.js","../script":"script.js"}],"data/progressOfOrder.js":[function(require,module,exports) {
+},{"../data/prodacts":"data/prodacts.js","../data/order":"data/order.js","../script":"script.js"}],"data/usersInfo.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.currentUser = exports.usersInfo = void 0;
+var usersInfoServer = [{
+  userId: 1,
+  name: "James",
+  email: "james@gmail.com",
+  password: 1
+}, {
+  userId: 2,
+  firstname: "Dilan",
+  email: "bobmail@gmail.com",
+  password: 2
+}];
+var usersInfo = new webix.DataCollection({
+  data: usersInfoServer
+});
+exports.usersInfo = usersInfo;
+var exam = [{
+  name: "user",
+  userId: 0
+}];
+var currentUser = new webix.DataCollection({
+  data: exam
+});
+exports.currentUser = currentUser;
+},{}],"data/progressOfOrder.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -631,8 +661,10 @@ exports.progressOfOrder = void 0;
 
 var _prodacts = require("./prodacts");
 
+var _usersInfo = require("./usersInfo");
+
 var progressOfOrderServer = [{
-  prodactsId: "1",
+  prodactsId: 1,
   amount: 1,
   address: "Minsk",
   delivery: "Post",
@@ -643,6 +675,18 @@ var progressOfOrderServer = [{
   mail: "",
   tel: "",
   userId: 1
+}, {
+  prodactsId: 9,
+  amount: 1,
+  address: "Krit",
+  delivery: "Post",
+  payment: "Card",
+  orderDate: new Date(2019, 11, 12),
+  status: "Declined",
+  orderUserName: "",
+  mail: "",
+  tel: "",
+  userId: 2
 }];
 var progressOfOrder = new webix.DataCollection({
   scheme: {
@@ -657,7 +701,7 @@ var progressOfOrder = new webix.DataCollection({
   data: progressOfOrderServer
 });
 exports.progressOfOrder = progressOfOrder;
-},{"./prodacts":"data/prodacts.js"}],"views/pageOrder.js":[function(require,module,exports) {
+},{"./prodacts":"data/prodacts.js","./usersInfo":"data/usersInfo.js"}],"views/pageOrder.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -668,6 +712,8 @@ exports.pageOrder = void 0;
 var _order = require("../data/order");
 
 var _progressOfOrder = require("../data/progressOfOrder");
+
+var _usersInfo = require("../data/usersInfo");
 
 var form = {
   view: "form",
@@ -723,6 +769,9 @@ var form = {
         newObj.prodactsId = obj.id;
         newObj.amount = obj.orderedAmount;
         var formValue = $$("formСheckout").getValues();
+
+        var item = _usersInfo.currentUser.serialize();
+
         newObj.orderUserName = formValue.text1;
         newObj.mail = formValue.text2;
         newObj.tel = formValue.text3;
@@ -731,6 +780,7 @@ var form = {
         newObj.delivery = $$("combo").getValue();
         newObj.orderDate = new Date();
         newObj.status = "In progress";
+        newObj.userId = item[0].userId;
 
         _progressOfOrder.progressOfOrder.add(newObj, -1);
       }); //
@@ -771,7 +821,7 @@ var pageOrder = {
   }]
 };
 exports.pageOrder = pageOrder;
-},{"../data/order":"data/order.js","../data/progressOfOrder":"data/progressOfOrder.js"}],"views/pageGoods.js":[function(require,module,exports) {
+},{"../data/order":"data/order.js","../data/progressOfOrder":"data/progressOfOrder.js","../data/usersInfo":"data/usersInfo.js"}],"views/pageGoods.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -899,6 +949,8 @@ exports.tableHistory = void 0;
 
 var _progressOfOrder = require("../data/progressOfOrder");
 
+var _usersInfo = require("../data/usersInfo");
+
 var tableHistory = {
   view: "datatable",
   id: "tableHistory",
@@ -989,76 +1041,23 @@ webix.ui({
     template: "<p class=\"window_progress_text\">Product was lost</p>"
   }
 });
-},{"../data/progressOfOrder":"data/progressOfOrder.js"}],"data/usersInfo.js":[function(require,module,exports) {
+},{"../data/progressOfOrder":"data/progressOfOrder.js","../data/usersInfo":"data/usersInfo.js"}],"views/autPageLogin.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.currentUser = exports.usersInfo = void 0;
-var usersInfoServer = [{
-  userId: 1,
-  name: "James",
-  email: "james@gmail.com",
-  password: 1
-}, {
-  userId: 2,
-  firstname: "Dilan",
-  email: "bobmail@gmail.com",
-  password: 2
-}];
-var usersInfo = new webix.DataCollection({
-  data: usersInfoServer
-});
-exports.usersInfo = usersInfo;
-var exam = [{
-  name: "some"
-}];
-var currentUser = new webix.DataCollection({
-  data: exam
-});
-exports.currentUser = currentUser;
-},{}],"views/authorizationPage.js":[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.authorization = void 0;
+exports.windowLogin = void 0;
 
 var _usersInfo = require("../data/usersInfo");
 
-var toolbar = {
-  view: "toolbar",
-  id: "toolbarAuthorization",
-  padding: 3,
-  elements: [{
-    view: "label",
-    label: "<span class='label_color'>Phone Shop</span>"
-  }, {}, {
-    view: "button",
-    label: "Login",
-    width: 90,
-    click: function click() {
-      $$("windowLogin").show();
-    }
-  }, {
-    view: "button",
-    label: "Register",
-    width: 150,
-    click: function click() {
-      $$("windowRegister").show();
-    }
-  }]
-};
-webix.ui({
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var windowLogin = webix.ui(_defineProperty({
   view: "window",
   id: "windowLogin",
   modal: true,
   position: "center",
-  //   label: {
-  //     width: 140
-  //   },
   head: {
     view: "toolbar",
     type: "clean",
@@ -1084,12 +1083,11 @@ webix.ui({
       id: "formWindowLogin",
       width: 500,
       elementsConfig: {
-        labelWidth: 150
+        labelWidth: 120
       },
       elements: [{
         view: "text",
         id: "emailLogin",
-        // type: "email",
         value: "james@gmail.com",
         label: "E-Mail Address",
         name: "email",
@@ -1109,19 +1107,18 @@ webix.ui({
         }
       }, {
         cols: [{
-          width: 150
+          width: 120
         }, {
           rows: [{
             view: "checkbox",
-            label: "Remember me",
-            width: 600 // height: 69
-
+            labelRight: "Remember me",
+            labelWidth: 0
           }, {
             cols: [{
               view: "button",
               value: "Login",
               css: "webix_primary",
-              width: 120,
+              width: 80,
               click: function click() {
                 var values = $$("formWindowLogin").getValues();
                 var fined = false;
@@ -1136,6 +1133,7 @@ webix.ui({
                     _usersInfo.currentUser.add(obj);
 
                     $$("labelShowName").refresh();
+                    $$("tableHistory").refresh();
                     $$("formWindowLogin").clear();
                     $$("windowLogin").hide();
                     $$("shopPage").show();
@@ -1149,7 +1147,16 @@ webix.ui({
                 }
               }
             }, {
-              template: "Forgot your Password?"
+              view: "template",
+              template: "Forgot your Password?",
+              borderless: true,
+              css: "template_login",
+              onClick: {
+                template_login: function template_login() {
+                  $$("windowLogin").hide();
+                  $$("windowResetPass").show();
+                }
+              }
             }]
           }]
         }]
@@ -1158,8 +1165,102 @@ webix.ui({
       width: 100
     }]
   }
-}).show();
-webix.ui({
+}, "position", function position(state) {
+  state.top = 100;
+}));
+exports.windowLogin = windowLogin;
+webix.ui(_defineProperty({
+  view: "window",
+  id: "windowResetPass",
+  modal: true,
+  position: "center",
+  head: {
+    view: "toolbar",
+    type: "clean",
+    cols: [{
+      template: "Reset Password",
+      css: "window_toolbar_progress"
+    }, {
+      view: "icon",
+      icon: "mdi mdi-close",
+      css: "alter",
+      hotkey: "esc",
+      click: function click() {
+        $$("windowResetPass").hide();
+      }
+    }]
+  },
+  body: {
+    type: "clean",
+    cols: [{
+      width: 100
+    }, {
+      view: "form",
+      id: "formWindowResetPass",
+      width: 500,
+      elementsConfig: {
+        labelWidth: 120
+      },
+      elements: [{
+        view: "text",
+        label: "E-Mail Address",
+        name: "email",
+        attributes: {
+          required: "true",
+          title: "Enter your email"
+        }
+      }, {
+        view: "button",
+        value: "Send Password Reset Link",
+        css: "webix_primary button_reset",
+        width: 250,
+        click: function click() {}
+      }]
+    }, {
+      width: 100
+    }]
+  }
+}, "position", function position(state) {
+  state.top = 100;
+}));
+},{"../data/usersInfo":"data/usersInfo.js"}],"views/authorizationPage.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.authorization = void 0;
+
+var _usersInfo = require("../data/usersInfo");
+
+var _autPageLogin = require("./autPageLogin");
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var toolbar = {
+  view: "toolbar",
+  id: "toolbarAuthorization",
+  padding: 3,
+  elements: [{
+    view: "label",
+    label: "<span class='label_color'>Phone Shop</span>"
+  }, {}, {
+    view: "button",
+    label: "Login",
+    width: 90,
+    click: function click() {
+      $$("windowLogin").show();
+    }
+  }, {
+    view: "button",
+    label: "Register",
+    width: 150,
+    click: function click() {
+      $$("windowRegister").show();
+    }
+  }]
+};
+webix.ui(_defineProperty({
   view: "window",
   id: "windowRegister",
   modal: true,
@@ -1170,7 +1271,6 @@ webix.ui({
   head: {
     view: "toolbar",
     type: "clean",
-    // css: "window_toolbar",
     cols: [{
       template: "Register",
       css: "window_toolbar_progress"
@@ -1314,13 +1414,15 @@ webix.ui({
       width: 100
     }]
   }
-});
+}, "position", function position(state) {
+  state.top = 100;
+}));
 var authorization = {
   id: "authorization",
   rows: [toolbar]
 };
 exports.authorization = authorization;
-},{"../data/usersInfo":"data/usersInfo.js"}],"script.js":[function(require,module,exports) {
+},{"../data/usersInfo":"data/usersInfo.js","./autPageLogin":"views/autPageLogin.js"}],"script.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1342,6 +1444,8 @@ var _authorizationPage = require("./views/authorizationPage");
 
 var _usersInfo = require("./data/usersInfo");
 
+var _progressOfOrder = require("./data/progressOfOrder");
+
 var toolbar = {
   view: "toolbar",
   id: "toolbar",
@@ -1349,7 +1453,10 @@ var toolbar = {
   padding: 3,
   elements: [{
     view: "label",
-    label: "<span class='label_color'>Phone Shop</span>"
+    label: "<span class='label_color'>Phone Shop</span>",
+    click: function click() {
+      $$("myDatatable").show();
+    }
   }, {}, {
     view: "label",
     id: "labelShowName",
@@ -1363,7 +1470,7 @@ var toolbar = {
     label: "Bag",
     id: "buttonBage",
     badge: "",
-    width: 90,
+    width: 120,
     click: function click() {
       $$("tableOrdered").filter(function (obj) {
         return obj.orderedAmount > 0;
@@ -1374,16 +1481,20 @@ var toolbar = {
   }, {
     view: "button",
     label: "History",
-    width: 150,
+    width: 120,
     click: function click() {
+      filterData();
+      $$("tableHistory").refresh();
       $$("tableHistory").show();
     }
   }, {
     view: "button",
     label: "Logout",
-    width: 150,
+    width: 120,
     click: function click() {
+      $$("myDatatable").show();
       $$("authorization").show();
+      $$("tableHistory").clearAll();
     }
   }]
 };
@@ -1427,7 +1538,17 @@ webix.ready(function () {
     cells: [_authorizationPage.authorization, shopPage]
   });
 });
-},{"./data/prodacts":"data/prodacts.js","./views/datatable":"views/datatable.js","./views/pageGoods":"views/pageGoods.js","./views/pageOrder":"views/pageOrder.js","./views/pageHistory":"views/pageHistory.js","./views/authorizationPage":"views/authorizationPage.js","./data/usersInfo":"data/usersInfo.js"}],"C:/Users/User/AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+
+function filterData() {
+  _progressOfOrder.progressOfOrder.filter(function (obj) {
+    var item = _usersInfo.currentUser.serialize();
+
+    if (obj.userId == item[0].userId) {
+      return obj;
+    }
+  });
+}
+},{"./data/prodacts":"data/prodacts.js","./views/datatable":"views/datatable.js","./views/pageGoods":"views/pageGoods.js","./views/pageOrder":"views/pageOrder.js","./views/pageHistory":"views/pageHistory.js","./views/authorizationPage":"views/authorizationPage.js","./data/usersInfo":"data/usersInfo.js","./data/progressOfOrder":"data/progressOfOrder.js"}],"C:/Users/User/AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -1455,7 +1576,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "56392" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "59489" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

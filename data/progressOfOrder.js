@@ -1,9 +1,11 @@
-export { progressOfOrder };
 import { prodacts } from "./prodacts";
+import { currentUser } from "./usersInfo";
+
+export { progressOfOrder };
 
 let progressOfOrderServer = [
   {
-    prodactsId: "1",
+    prodactsId: 1,
     amount: 1,
     address: "Minsk",
     delivery: "Post",
@@ -14,6 +16,19 @@ let progressOfOrderServer = [
     mail: "",
     tel: "",
     userId: 1
+  },
+  {
+    prodactsId: 9,
+    amount: 1,
+    address: "Krit",
+    delivery: "Post",
+    payment: "Card",
+    orderDate: new Date(2019, 11, 12),
+    status: "Declined",
+    orderUserName: "",
+    mail: "",
+    tel: "",
+    userId: 2
   }
 ];
 

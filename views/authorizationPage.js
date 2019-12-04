@@ -1,4 +1,5 @@
 import { usersInfo, currentUser } from "../data/usersInfo";
+import { windowLogin } from "./autPageLogin";
 
 export { authorization };
 
@@ -31,125 +32,6 @@ const toolbar = {
   ]
 };
 
-webix
-  .ui({
-    view: "window",
-    id: "windowLogin",
-    modal: true,
-    position: "center",
-    //   label: {
-    //     width: 140
-    //   },
-    head: {
-      view: "toolbar",
-      type: "clean",
-      cols: [
-        { template: "Login", css: "window_toolbar_progress" },
-        {
-          view: "icon",
-          icon: "mdi mdi-close",
-          css: "alter",
-          hotkey: "esc",
-          click: function() {
-            $$("windowLogin").hide();
-          }
-        }
-      ]
-    },
-    body: {
-      type: "clean",
-      cols: [
-        { width: 100 },
-        {
-          view: "form",
-          id: "formWindowLogin",
-          width: 500,
-          elementsConfig: {
-            labelWidth: 150
-          },
-          elements: [
-            {
-              view: "text",
-              id: "emailLogin",
-              // type: "email",
-              value: "james@gmail.com",
-              label: "E-Mail Address",
-              name: "email",
-              attributes: {
-                required: "true",
-                title: "Enter your email"
-              }
-            },
-            {
-              view: "text",
-              type: "password",
-              id: "passwordLogin",
-              label: "Password",
-              name: "password",
-              attributes: {
-                required: "true",
-                title: "Enter your password"
-              }
-            },
-            {
-              cols: [
-                { width: 150 },
-                {
-                  rows: [
-                    {
-                      view: "checkbox",
-                      label: "Remember me",
-                      width: 600
-                      // height: 69
-                    },
-                    {
-                      cols: [
-                        {
-                          view: "button",
-                          value: "Login",
-                          css: "webix_primary",
-                          width: 120,
-                          click: function() {
-                            const values = $$("formWindowLogin").getValues();
-                            let fined = false;
-                            usersInfo.find(obj => {
-                              //currentUser;
-
-                              if (
-                                values.email == obj.email &&
-                                values.password == obj.password
-                              ) {
-                                fined = true;
-                                currentUser.clearAll();
-                                currentUser.add(obj);
-                                $$("labelShowName").refresh();
-                                $$("formWindowLogin").clear();
-                                $$("windowLogin").hide();
-                                $$("shopPage").show();
-                              }
-                            });
-                            if (fined === false) {
-                              webix.message("no match! Try again");
-                              $$("passwordLogin").config.value = "";
-                              $$("passwordLogin").refresh();
-                            }
-                          }
-                        },
-                        { template: "Forgot your Password?" }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        },
-        { width: 100 }
-      ]
-    }
-  })
-  .show();
-
 webix.ui({
   view: "window",
   id: "windowRegister",
@@ -161,7 +43,6 @@ webix.ui({
   head: {
     view: "toolbar",
     type: "clean",
-    // css: "window_toolbar",
     cols: [
       { template: "Register", css: "window_toolbar_progress" },
       {
@@ -310,6 +191,9 @@ webix.ui({
       },
       { width: 100 }
     ]
+  },
+  position: function(state) {
+    state.top = 100;
   }
 });
 
