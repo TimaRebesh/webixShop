@@ -1,1 +1,3 @@
-{ "extends": "eslint-config-xbsoftware/{1__double_quotes_and_tabs}" }
+{
+  "extends": "./node_modules/eslint-xbsoftware/1__double_quotes_and_tabs/.eslintrc"
+}

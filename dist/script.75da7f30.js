@@ -124,6 +124,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.phones = exports.prodacts = void 0;
+
+/* eslint-disable no-undef */
 var prodactsServer = [{
   id: "1",
   value: "Samsung",
@@ -236,7 +238,7 @@ function createPhonesData() {
 
     if (!set.has(obj.value)) {
       set.add(obj.value);
-      idFirstNum = idFirstNum + 0.1;
+      idFirstNum += 0.1;
       newObject.id = String(idFirstNum.toFixed(1));
       newObject.value = obj.value;
       phones[0].data.push(newObject);
@@ -261,7 +263,7 @@ prodactsServer.forEach(function (obj) {
     objTree.id = String(idFirstNum);
     objTree.value = obj.value;
     var objBranch = {};
-    objBranch.id = String(idFirstNum + "." + idSecondNum);
+    objBranch.id = String("".concat(idFirstNum, ".").concat(idSecondNum));
     objBranch.value = obj.model;
     objBranch.price = obj.price;
     objBranch.rating = obj.rating;
@@ -270,11 +272,13 @@ prodactsServer.forEach(function (obj) {
     prodactsTreeData.push(objTree);
   } else {
     prodactsTreeData.forEach(function (item) {
-      if (item.value == value) {
+      if (item.value === value) {
+        // eslint-disable-next-line no-inner-declarations
         var createId = function createId() {
           var idPreviousObj = item.data[item.data.length - 1].id;
           var mark = false;
-          var arr = [];
+          var arr = []; // eslint-disable-next-line no-restricted-syntax
+
           var _iteratorNormalCompletion = true;
           var _didIteratorError = false;
           var _iteratorError = undefined;
@@ -283,11 +287,11 @@ prodactsServer.forEach(function (obj) {
             for (var _iterator = idPreviousObj[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
               var letter = _step.value;
 
-              if (mark == true) {
+              if (mark === true) {
                 arr.push(letter);
               }
 
-              if (letter == ".") {
+              if (letter === ".") {
                 mark = true;
               }
             }
@@ -308,7 +312,8 @@ prodactsServer.forEach(function (obj) {
 
           var NumberOfLast = Number(arr.join("")) + 1;
           var mark2 = false;
-          var arr2 = [];
+          var arr2 = []; // eslint-disable-next-line no-restricted-syntax
+
           var _iteratorNormalCompletion2 = true;
           var _didIteratorError2 = false;
           var _iteratorError2 = undefined;
@@ -317,11 +322,11 @@ prodactsServer.forEach(function (obj) {
             for (var _iterator2 = idPreviousObj[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
               var _letter = _step2.value;
 
-              if (mark2 == false) {
+              if (mark2 === false) {
                 arr2.push(_letter);
               }
 
-              if (_letter == ".") {
+              if (_letter === ".") {
                 mark2 = true;
               }
             }
@@ -340,8 +345,8 @@ prodactsServer.forEach(function (obj) {
             }
           }
 
-          var createId = arr2.join("") + String(NumberOfLast);
-          return createId;
+          var createId2 = arr2.join("") + String(NumberOfLast);
+          return createId2;
         };
 
         var _objBranch = {};
@@ -693,7 +698,8 @@ var progressOfOrder = new webix.DataCollection({
     $init: function $init(obj) {
       _prodacts.prodacts.find(function (item) {
         if (item.id === obj.prodactsId) {
-          obj.prodact = item.value + " " + item.model;
+          // eslint-disable-next-line no-param-reassign
+          obj.prodact = "".concat(item.value, " ").concat(item.model);
         }
       });
     }
@@ -1053,11 +1059,32 @@ var _usersInfo = require("../data/usersInfo");
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-var windowLogin = webix.ui(_defineProperty({
+// eslint-disable-next-line no-undef
+var windowLogin = webix.ui({
   view: "window",
   id: "windowLogin",
   modal: true,
-  position: "center",
+  on: {
+    onBeforeShow: function onBeforeShow() {
+      var arrCookies = document.cookie.split(";");
+      arrCookies.forEach(function (item) {
+        var arrValues = item.split("=");
+        arrValues.forEach(function (item, index) {
+          if (item === " shopWebix" && arrValues[1] !== "0") {
+            _usersInfo.usersInfo.find(function (obj) {
+              if (obj.email == arrValues[1]) {
+                $$("checkboxLogin").hide();
+                $$("emailLogin").config.value = obj.email;
+                $$("passwordLogin").config.value = obj.password;
+                $$("emailLogin").refresh();
+                $$("passwordLogin").refresh();
+              }
+            });
+          }
+        });
+      });
+    }
+  },
   head: {
     view: "toolbar",
     type: "clean",
@@ -1088,7 +1115,6 @@ var windowLogin = webix.ui(_defineProperty({
       elements: [{
         view: "text",
         id: "emailLogin",
-        value: "james@gmail.com",
         label: "E-Mail Address",
         name: "email",
         attributes: {
@@ -1111,6 +1137,7 @@ var windowLogin = webix.ui(_defineProperty({
         }, {
           rows: [{
             view: "checkbox",
+            id: "checkboxLogin",
             labelRight: "Remember me",
             labelWidth: 0
           }, {
@@ -1121,12 +1148,21 @@ var windowLogin = webix.ui(_defineProperty({
               width: 80,
               click: function click() {
                 var values = $$("formWindowLogin").getValues();
-                var fined = false;
+                var checkboxValue = $$("checkboxLogin").getValue();
+                var name = "shopWebix";
+                var value = 0;
+
+                if (checkboxValue === 1) {
+                  value = values.email;
+                }
+
+                document.cookie = name + "=" + value;
+                var isFound = false;
 
                 _usersInfo.usersInfo.find(function (obj) {
-                  //currentUser;
-                  if (values.email == obj.email && values.password == obj.password) {
-                    fined = true;
+                  // currentUser;
+                  if (values.email === obj.email && values.password === obj.password) {
+                    isFound = true;
 
                     _usersInfo.currentUser.clearAll();
 
@@ -1140,7 +1176,7 @@ var windowLogin = webix.ui(_defineProperty({
                   }
                 });
 
-                if (fined === false) {
+                if (isFound === false) {
                   webix.message("no match! Try again");
                   $$("passwordLogin").config.value = "";
                   $$("passwordLogin").refresh();
@@ -1164,10 +1200,11 @@ var windowLogin = webix.ui(_defineProperty({
     }, {
       width: 100
     }]
+  },
+  position: function position(state) {
+    state.top = 100;
   }
-}, "position", function position(state) {
-  state.top = 100;
-}));
+});
 exports.windowLogin = windowLogin;
 webix.ui(_defineProperty({
   view: "window",
@@ -1235,8 +1272,9 @@ var _usersInfo = require("../data/usersInfo");
 
 var _autPageLogin = require("./autPageLogin");
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+/* eslint-disable no-param-reassign */
 
+/* eslint-disable no-undef */
 var toolbar = {
   view: "toolbar",
   id: "toolbarAuthorization",
@@ -1260,11 +1298,10 @@ var toolbar = {
     }
   }]
 };
-webix.ui(_defineProperty({
+webix.ui({
   view: "window",
   id: "windowRegister",
   modal: true,
-  position: "center",
   label: {
     width: 140
   },
@@ -1375,8 +1412,6 @@ webix.ui(_defineProperty({
               $$("formInWindowRegister").clear();
               $$("windowRegister").hide();
               $$("shopPage").show();
-            } else {
-              return;
             }
           }
         }, {}]
@@ -1387,7 +1422,7 @@ webix.ui(_defineProperty({
           var flag = 0;
 
           _usersInfo.usersInfo.find(function (obj) {
-            if (obj.email == value) {
+            if (obj.email === value) {
               $$("email").config.invalidMessage = "The email has already been taken";
               flag = 1;
             } else {
@@ -1395,28 +1430,30 @@ webix.ui(_defineProperty({
             }
           });
 
-          return webix.rules.isEmail(value) && flag != 1;
+          return webix.rules.isEmail(value) && flag !== 1;
         },
         password: function password(value) {
-          return webix.rules.isNotEmpty(value) && value != "" && value == $$("comfPassword").getValue();
+          return webix.rules.isNotEmpty(value) && value !== "" && value === $$("comfPassword").getValue();
         },
         confPassword: function confPassword(value) {
           var password = $$("password").getValue();
 
-          if (value != password) {
+          if (value !== password) {
             $$("comfPassword").config.value = "";
           }
 
-          return webix.rules.isNotEmpty(value) && value == password;
+          return webix.rules.isNotEmpty(value) && value === password;
         }
       }
     }, {
       width: 100
     }]
+  },
+  position: function position(state) {
+    state.top = 100;
   }
-}, "position", function position(state) {
-  state.top = 100;
-}));
+}); // eslint-disable-next-line import/prefer-default-export
+
 var authorization = {
   id: "authorization",
   rows: [toolbar]
@@ -1576,7 +1613,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "59489" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "51555" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

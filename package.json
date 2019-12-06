@@ -1,5 +1,5 @@
 {
-  "name": "WebixShop",
+  "name": "webixshop",
   "version": "1.0.0",
   "description": "",
   "main": "datatable.js",
@@ -14,7 +14,7 @@
   },
   "devDependencies": {
     "eslint": "^6.7.2",
-    "eslint-config-xbsoftware": "git+https://bitbucket.org/xbsltd/eslint.git#v3.0.0",
-    "eslint-plugin-import": "^2.18.2"
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-xbsoftware": "git+https://bitbucket.org/xbsltd/eslint.git#v1.1.0"
   }
 }
