@@ -51,6 +51,8 @@ webix.ui({
 				hotkey: "esc",
 				click() {
 					$$("windowRegister").hide();
+					$$("formInWindowRegister").clearValidation();
+					$$("formInWindowRegister").clear();
 				}
 			}
 		]
@@ -76,6 +78,13 @@ webix.ui({
 							required: "true",
 							title: "Enter your name",
 							maxlength: 22
+						},
+						on: {
+							onBlur: function () {
+								const curretnValue = this.config.value
+								this.config.value = curretnValue.trim();
+								this.refresh()
+							}
 						}
 					},
 					{
@@ -89,7 +98,14 @@ webix.ui({
 							required: "true",
 							title: "Enter your email"
 						},
-						invalidMessage: ""
+						invalidMessage: "",
+						on: {
+							onBlur: function () {
+								const curretnValue = this.config.value
+								this.config.value = curretnValue.trim();
+								this.refresh()
+							}
+						}
 					},
 					{
 						view: "text",
@@ -129,16 +145,16 @@ webix.ui({
 										// create userInsfo
 										const values = form.getValues();
 
-										let newObj = {};
-
 										const arr = usersInfo.serialize();
 										const lastId = arr[arr.length - 1].userId;
 										const newId = lastId + 1;
 
-										newObj.userId = newId;
-										newObj.name = values.name;
-										newObj.email = values.mail;
-										newObj.password = values.password;
+										let newObj = {
+											userId: newId,
+											name: values.name,
+											email: values.mail,
+											password: values.password,
+										};
 
 										usersInfo.add(newObj, -1);
 										currentUser.clearAll();
@@ -157,29 +173,34 @@ webix.ui({
 				],
 				rules: {
 					name: webix.rules.isNotEmpty,
-					mail(value) {
-						let flag = 0;
+					mail(val) {
+						let switcher = 0;
+						const value = val.trim();
 						usersInfo.find((obj) => {
 							if (obj.email === value) {
-								$$("email").config.invalidMessage =
-									"The email has already been taken";
-								flag = 1;
+								$$("email").config.invalidMessage = "The email has already been taken";
+								switcher = 1;
 							}
 							else {
 								$$("email").config.invalidMessage = "The email is not correct";
 							}
 						});
-						return webix.rules.isEmail(value) && flag !== 1;
+
+
+						return webix.rules.isEmail(value) && switcher !== 1 && ValidateEmail(value);
 					},
-					password(value) {
+					password(vp) {
+						const value = vp.trim();
+						console.log(value)
 						return (
 							webix.rules.isNotEmpty(value) &&
 							value !== "" &&
 							value === $$("comfPassword").getValue()
 						);
 					},
-					confPassword(value) {
+					confPassword(vp) {
 						let password = $$("password").getValue();
+						const value = vp.trim();
 						if (value !== password) {
 							$$("comfPassword").config.value = "";
 						}
@@ -201,3 +222,9 @@ export const authorization = {
 	rows: [toolbar]
 };
 
+function ValidateEmail(mail) {
+	if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(mail)) {
+		return (true)
+	}
+	return (false)
+}

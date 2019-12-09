@@ -98,7 +98,8 @@ const windowLogin = webix.ui({
 												click() {
 													const values = $$("formWindowLogin").getValues();
 													const checkboxValue = $$("checkboxLogin").getValue();
-
+													const password = values.password.trim();
+													const email = values.email.trim();
 
 													const name = "shopWebix";
 													let value = 0;
@@ -108,15 +109,10 @@ const windowLogin = webix.ui({
 													}
 													document.cookie = name + "=" + value;
 
-
-
 													let isFound = false;
 													usersInfo.find(obj => {
 														// currentUser;
-
-														if (
-															values.email === obj.email && values.password === obj.password
-														) {
+														if (email === obj.email && password === obj.password) {
 															isFound = true;
 															currentUser.clearAll();
 															currentUser.add(obj);
