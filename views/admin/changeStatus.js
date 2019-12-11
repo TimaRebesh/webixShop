@@ -1,8 +1,9 @@
 import { usersInfo } from "../../data/usersInfo"
+import { curentUser } from "./orders"
+import { progressOfOrder } from "../../data/progressOfOrder";
 
-let curentUser = 0;
 
-export const changeStatus = webix.ui({
+const changeStatus = webix.ui({
 	view: "window",
 	id: "windowOrdersAdmin",
 	modal: true,
@@ -94,3 +95,5 @@ export const changeStatus = webix.ui({
 		]
 	},
 });
+
+export { changeStatus, curentUser }

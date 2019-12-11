@@ -8,6 +8,7 @@ const adminClietsInfo = {
 	editaction: "dblclick",
 	fixedRowHeight: false,
 	rowHeight: 80,
+	resizeColumn: true,
 	data: usersInfo,
 	columns: [
 		{ id: "userId", header: "#", sort: "int", fillspace: 0.5 },

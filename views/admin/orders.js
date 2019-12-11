@@ -2,15 +2,16 @@ import { progressOfOrder } from "../../data/progressOfOrder";
 import { prodacts } from "../../data/prodacts";
 import { changeStatus } from "./changeStatus"
 
+let curentUser = 0;
 
-
-export const adminOrders = {
+const adminOrders = {
 	view: "datatable",
 	id: "datatableOrders",
 	css: "data_style",
 	select: true,
 	fixedRowHeight: false,
 	rowHeight: 80,
+	resizeColumn: true,
 	data: progressOfOrder,
 	columns: [
 		{
@@ -47,4 +48,4 @@ export const adminOrders = {
 	}
 }
 
-
+export { curentUser, adminOrders }

@@ -373,22 +373,151 @@ var userOrder = new webix.DataCollection({
   data: userOrderServer
 });
 exports.userOrder = userOrder;
-},{}],"views/datatable.js":[function(require,module,exports) {
+},{}],"views/shopPages/prodactsObserve/windowDetails.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.datatable = void 0;
+exports.windowDetails = void 0;
 
-var _prodacts = require("../data/prodacts");
+var _selectProdacts = require("./selectProdacts");
 
-var _order = require("../data/order");
+webix.protoUI({
+  name: "mytemplate",
+  getValue: function getValue() {
+    return this.getValues();
+  },
+  setValue: function setValue(values) {
+    this.setValues(values);
+  }
+}, webix.ui.template);
+var windowDetails = webix.ui({
+  view: "window",
+  id: "window",
+  modal: true,
+  position: "center",
+  label: {
+    width: 140
+  },
+  on: {
+    onBeforeShow: function onBeforeShow() {
+      if (_selectProdacts.curentSelectedItem.star === 1) {
+        $$("iconView").config.icon = "mdi mdi-star star_gold";
+        $$("iconView").refresh();
+      } else {
+        $$("iconView").config.icon = "mdi mdi-star star_grey";
+        $$("iconView").refresh();
+      }
 
-var _script = require("../script");
+      $$("ratingWindow").config.ratingValue = _selectProdacts.curentSelectedItem.rating;
+      $$("ratingWindow").refresh();
+    }
+  },
+  head: {
+    view: "toolbar",
+    id: "windowHead",
+    css: "window_toolbar",
+    cols: [{
+      view: "label",
+      name: "FirstName",
+      css: "text_in_windowHead"
+    }, {
+      view: "icon",
+      icon: "mdi mdi-close",
+      css: "alter",
+      hotkey: "esc",
+      click: function click() {
+        $$("window").hide();
+      }
+    }]
+  },
+  body: {
+    view: "form",
+    id: "formInWindow",
+    width: 700,
+    elementsConfig: {
+      labelWidth: 40
+    },
+    elements: [{
+      type: "clean",
+      cols: [{
+        view: "mytemplate",
+        template: "<img class='image_for_window' src='#picture#'/>",
+        name: "Image",
+        height: 400
+      }, {
+        type: "clean",
+        rows: [{
+          view: "mytemplate",
+          template: "<p class='text_winow'><b>Name</b> #name#</p>",
+          name: "Name",
+          height: 100
+        }, {
+          view: "mytemplate",
+          template: "<p class='text_winow'><b>Price</b> #price#</p>",
+          name: "Price",
+          height: 100
+        }, {
+          type: "clean",
+          cols: [{
+            view: "template",
+            ratingValue: "",
+            template: function template(obj, view) {
+              return "<p class='text_winow'><b>Rating</b> ".concat(view.config.ratingValue, "</p>");
+            },
+            name: "Price",
+            id: "ratingWindow"
+          }, {
+            view: "icon",
+            id: "iconView",
+            css: "icon_view_star",
+            height: 100,
+            align: "left",
+            icon: "",
+            click: function click() {
+              if (_selectProdacts.curentSelectedItem.star === 1) {
+                _selectProdacts.curentSelectedItem.star = 0;
+                _selectProdacts.curentSelectedItem.rating--;
+                this.config.icon = "mdi mdi-star star_grey";
+                this.refresh();
+                $$("ratingWindow").config.ratingValue = _selectProdacts.curentSelectedItem.rating;
+                $$("myDatatable").refresh();
+                $$("ratingWindow").refresh();
+              } else {
+                _selectProdacts.curentSelectedItem.star = 1;
+                _selectProdacts.curentSelectedItem.rating++;
+                this.config.icon = "mdi mdi-star star_gold";
+                this.refresh();
+                $$("ratingWindow").config.ratingValue = _selectProdacts.curentSelectedItem.rating;
+                $$("myDatatable").refresh();
+                $$("ratingWindow").refresh();
+              }
+            }
+          }, {}]
+        }]
+      }]
+    }]
+  }
+});
+exports.windowDetails = windowDetails;
+},{"./selectProdacts":"views/shopPages/prodactsObserve/selectProdacts.js"}],"views/shopPages/prodactsObserve/selectProdacts.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.curentSelectedItem = exports.datatable = void 0;
+
+var _prodacts = require("../../../data/prodacts");
+
+var _order = require("../../../data/order");
+
+var _windowDetails = require("./windowDetails");
 
 var defaultPhoto = "https://docplayer.ru/docs-images/61/45953296/images/5-2.png";
 var curentSelectedItem = 0;
+exports.curentSelectedItem = curentSelectedItem;
 var datatable = {
   view: "datatable",
   id: "myDatatable",
@@ -484,10 +613,10 @@ var datatable = {
   },
   on: {
     onItemDblClick: function onItemDblClick(obj) {
-      $$("window").show();
+      _windowDetails.windowDetails.show();
     },
     onAfterSelect: function onAfterSelect(id) {
-      curentSelectedItem = this.getItem(id);
+      exports.curentSelectedItem = curentSelectedItem = this.getItem(id);
       $$("windowHead").setValues({
         FirstName: this.getItem(id).value + " " + this.getItem(id).model
       });
@@ -509,124 +638,7 @@ var datatable = {
   }
 };
 exports.datatable = datatable;
-webix.protoUI({
-  name: "mytemplate",
-  getValue: function getValue() {
-    return this.getValues();
-  },
-  setValue: function setValue(values) {
-    this.setValues(values);
-  }
-}, webix.ui.template);
-webix.ui({
-  view: "window",
-  id: "window",
-  modal: true,
-  position: "center",
-  label: {
-    width: 140
-  },
-  on: {
-    onBeforeShow: function onBeforeShow() {
-      if (curentSelectedItem.star === 1) {
-        $$("iconView").config.icon = "mdi mdi-star star_gold";
-        $$("iconView").refresh();
-      } else {
-        $$("iconView").config.icon = "mdi mdi-star star_grey";
-        $$("iconView").refresh();
-      }
-
-      $$("ratingWindow").config.ratingValue = curentSelectedItem.rating;
-      $$("ratingWindow").refresh();
-    }
-  },
-  head: {
-    view: "toolbar",
-    id: "windowHead",
-    css: "window_toolbar",
-    cols: [{
-      view: "label",
-      name: "FirstName",
-      css: "text_in_windowHead"
-    }, {
-      view: "icon",
-      icon: "mdi mdi-close",
-      css: "alter",
-      hotkey: "esc",
-      click: function click() {
-        $$("window").hide();
-      }
-    }]
-  },
-  body: {
-    view: "form",
-    id: "formInWindow",
-    width: 700,
-    elementsConfig: {
-      labelWidth: 40
-    },
-    elements: [{
-      type: "clean",
-      cols: [{
-        view: "mytemplate",
-        template: "<img class='image_for_window' src='#picture#'/>",
-        name: "Image",
-        height: 400
-      }, {
-        type: "clean",
-        rows: [{
-          view: "mytemplate",
-          template: "<p class='text_winow'><b>Name</b> #name#</p>",
-          name: "Name",
-          height: 100
-        }, {
-          view: "mytemplate",
-          template: "<p class='text_winow'><b>Price</b> #price#</p>",
-          name: "Price",
-          height: 100
-        }, {
-          type: "clean",
-          cols: [{
-            view: "template",
-            ratingValue: "",
-            template: function template(obj, view) {
-              return "<p class='text_winow'><b>Rating</b> ".concat(view.config.ratingValue, "</p>");
-            },
-            name: "Price",
-            id: "ratingWindow"
-          }, {
-            view: "icon",
-            id: "iconView",
-            css: "icon_view_star",
-            height: 100,
-            align: "left",
-            icon: "",
-            click: function click() {
-              if (curentSelectedItem.star === 1) {
-                curentSelectedItem.star = 0;
-                curentSelectedItem.rating--;
-                this.config.icon = "mdi mdi-star star_grey";
-                this.refresh();
-                $$("ratingWindow").config.ratingValue = curentSelectedItem.rating;
-                $$("myDatatable").refresh();
-                $$("ratingWindow").refresh();
-              } else {
-                curentSelectedItem.star = 1;
-                curentSelectedItem.rating++;
-                this.config.icon = "mdi mdi-star star_gold";
-                this.refresh();
-                $$("ratingWindow").config.ratingValue = curentSelectedItem.rating;
-                $$("myDatatable").refresh();
-                $$("ratingWindow").refresh();
-              }
-            }
-          }, {}]
-        }]
-      }]
-    }]
-  }
-});
-},{"../data/prodacts":"data/prodacts.js","../data/order":"data/order.js","../script":"script.js"}],"data/usersInfo.js":[function(require,module,exports) {
+},{"../../../data/prodacts":"data/prodacts.js","../../../data/order":"data/order.js","./windowDetails":"views/shopPages/prodactsObserve/windowDetails.js"}],"data/usersInfo.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -714,7 +726,7 @@ var progressOfOrder = new webix.DataCollection({
   data: progressOfOrderServer
 });
 exports.progressOfOrder = progressOfOrder;
-},{"./prodacts":"data/prodacts.js","./usersInfo":"data/usersInfo.js"}],"views/pageOrder.js":[function(require,module,exports) {
+},{"./prodacts":"data/prodacts.js","./usersInfo":"data/usersInfo.js"}],"views/shopPages/pageOrder.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -722,11 +734,13 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.pageOrder = void 0;
 
-var _order = require("../data/order");
+var _order = require("../../data/order");
 
-var _progressOfOrder = require("../data/progressOfOrder");
+var _progressOfOrder = require("../../data/progressOfOrder");
 
-var _usersInfo = require("../data/usersInfo");
+var _usersInfo = require("../../data/usersInfo");
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 var form = {
   view: "form",
@@ -775,54 +789,55 @@ var form = {
     css: "webix_primary",
     value: "Checkout",
     click: function click() {
-      // this.getParentView().validate();
-      //  create order progress
-      _order.userOrder.find(function (obj) {
-        var newObj = {};
-        newObj.prodactsId = obj.id;
-        newObj.amount = obj.orderedAmount;
-        var formValue = $$("formСheckout").getValues();
+      if (this.getParentView().validate()) {
+        //  create order progress
+        _order.userOrder.find(function (obj) {
+          var newObj = {};
+          newObj.prodactsId = obj.id;
+          newObj.amount = obj.orderedAmount;
+          var formValue = $$("formСheckout").getValues();
 
-        var item = _usersInfo.currentUser.serialize();
+          var item = _usersInfo.currentUser.serialize();
 
-        newObj.orderNumber = webix.uid();
-        newObj.orderUserName = formValue.text1;
-        newObj.mail = formValue.text2;
-        newObj.tel = formValue.text3;
-        newObj.address = formValue.text4;
-        newObj.payment = $$("richselect").getValue();
-        newObj.delivery = $$("combo").getValue();
-        newObj.orderDate = new Date();
-        newObj.status = "In progress";
-        newObj.userId = item[0].userId;
+          newObj.orderNumber = webix.uid();
+          newObj.orderUserName = formValue.text1;
+          newObj.mail = formValue.text2;
+          newObj.tel = formValue.text3;
+          newObj.address = formValue.text4;
+          newObj.payment = $$("richselect").getValue();
+          newObj.delivery = $$("combo").getValue();
+          newObj.orderDate = new Date();
+          newObj.status = "In progress";
+          newObj.userId = item[0].userId;
 
-        _progressOfOrder.progressOfOrder.add(newObj, -1);
-      }); //
+          _progressOfOrder.progressOfOrder.add(newObj, -1);
+        }); //
 
 
-      $$("tableHistory").filter(function (obj) {
-        var item = _usersInfo.currentUser.serialize();
+        $$("tableHistory").filter(function (obj) {
+          var item = _usersInfo.currentUser.serialize();
 
-        if (obj.userId === item[0].userId) {
-          return true;
-        }
+          if (obj.userId === item[0].userId) {
+            return true;
+          }
 
-        return false;
-      }); //
+          return false;
+        }); //
 
-      _order.userOrder.clearAll();
+        _order.userOrder.clearAll();
 
-      $$("buttonBage").config.badge = "";
-      $$("buttonBage").refresh();
-      $$("tableHistory").refresh();
-      $$("tableHistory").show();
+        $$("buttonBage").config.badge = "";
+        $$("buttonBage").refresh();
+        $$("tableHistory").refresh();
+        $$("tableHistory").show();
+      }
     }
   }],
-  rules: {// text1: webix.rules.isNotEmpty,
-    // text2: webix.rules.isEmail,
-    // text3: webix.rules.isNotEmpty,
-    // text3: webix.rules.isNotEmpty
-  },
+  rules: _defineProperty({
+    text1: webix.rules.isNotEmpty,
+    text2: webix.rules.isEmail,
+    text3: webix.rules.isNotEmpty
+  }, "text3", webix.rules.isNotEmpty),
   elementsConfig: {
     labelWidth: 200
   }
@@ -844,7 +859,7 @@ var pageOrder = {
   }]
 };
 exports.pageOrder = pageOrder;
-},{"../data/order":"data/order.js","../data/progressOfOrder":"data/progressOfOrder.js","../data/usersInfo":"data/usersInfo.js"}],"views/pageGoods.js":[function(require,module,exports) {
+},{"../../data/order":"data/order.js","../../data/progressOfOrder":"data/progressOfOrder.js","../../data/usersInfo":"data/usersInfo.js"}],"views/shopPages/Bag.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -854,10 +869,9 @@ exports.table = exports.pageGoods = void 0;
 
 var _pageOrder = require("./pageOrder");
 
-var _prodacts = require("../data/prodacts");
+var _order = require("../../data/order");
 
-var _order = require("../data/order");
-
+// import { prodacts } from "../../data/prodacts";
 var defaultPhoto = "https://docplayer.ru/docs-images/61/45953296/images/5-2.png";
 var table = {
   view: "datatable",
@@ -962,7 +976,46 @@ var pageGoods = {
   rows: [table, buttons]
 };
 exports.pageGoods = pageGoods;
-},{"./pageOrder":"views/pageOrder.js","../data/prodacts":"data/prodacts.js","../data/order":"data/order.js"}],"views/pageHistory.js":[function(require,module,exports) {
+},{"./pageOrder":"views/shopPages/pageOrder.js","../../data/order":"data/order.js"}],"views/shopPages/history/windowProgress.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.windowProgress = void 0;
+var windowProgress = webix.ui({
+  view: "window",
+  id: "windowProgress",
+  modal: true,
+  position: "center",
+  head: {
+    view: "toolbar",
+    type: "clean",
+    css: "webix_primary",
+    elements: [{
+      template: "Decline reason",
+      css: "window_toolbar_progress"
+    }, {
+      view: "icon",
+      icon: "mdi mdi-close",
+      css: "alter",
+      hotkey: "esc",
+      click: function click() {
+        $$("windowProgress").hide();
+      }
+    }]
+  },
+  body: {
+    view: "template",
+    id: "progressDetails",
+    details: "",
+    template: function template() {
+      return "<p class=\"window_progress_text\">".concat($$("progressDetails").config.details, "</p>");
+    }
+  }
+});
+exports.windowProgress = windowProgress;
+},{}],"views/shopPages/history/pageHistory.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -970,11 +1023,10 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.tableHistory = void 0;
 
-var _progressOfOrder = require("../data/progressOfOrder");
+var _progressOfOrder = require("../../../data/progressOfOrder");
 
-var _usersInfo = require("../data/usersInfo");
+var _windowProgress = require("./windowProgress");
 
-var selectProdactOfOrdered = "";
 var tableHistory = {
   view: "datatable",
   id: "tableHistory",
@@ -1039,7 +1091,9 @@ var tableHistory = {
 
       if (selectedOrderedProdact.status === "Declined") {
         $$("progressDetails").config.details = selectedOrderedProdact.reasonStatus;
-        $$("windowProgress").show();
+        $$("progressDetails").refresh();
+
+        _windowProgress.windowProgress.show();
       }
 
       return;
@@ -1047,38 +1101,7 @@ var tableHistory = {
   }
 };
 exports.tableHistory = tableHistory;
-webix.ui({
-  view: "window",
-  id: "windowProgress",
-  modal: true,
-  position: "center",
-  head: {
-    view: "toolbar",
-    type: "clean",
-    css: "webix_primary",
-    elements: [{
-      template: "Decline reason",
-      css: "window_toolbar_progress"
-    }, {
-      view: "icon",
-      icon: "mdi mdi-close",
-      css: "alter",
-      hotkey: "esc",
-      click: function click() {
-        $$("windowProgress").hide();
-      }
-    }]
-  },
-  body: {
-    view: "template",
-    id: "progressDetails",
-    details: "",
-    template: function template() {
-      return "<p class=\"window_progress_text\">".concat($$("progressDetails").config.details, "</p>");
-    }
-  }
-});
-},{"../data/progressOfOrder":"data/progressOfOrder.js","../data/usersInfo":"data/usersInfo.js"}],"views/autorization/register/register.js":[function(require,module,exports) {
+},{"../../../data/progressOfOrder":"data/progressOfOrder.js","./windowProgress":"views/shopPages/history/windowProgress.js"}],"views/autorization/register/register.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1563,6 +1586,7 @@ var adminClietsInfo = {
   editaction: "dblclick",
   fixedRowHeight: false,
   rowHeight: 80,
+  resizeColumn: true,
   data: _usersInfo.usersInfo,
   columns: [{
     id: "userId",
@@ -1607,11 +1631,20 @@ exports.adminClietsInfo = adminClietsInfo;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+Object.defineProperty(exports, "curentUser", {
+  enumerable: true,
+  get: function () {
+    return _orders.curentUser;
+  }
+});
 exports.changeStatus = void 0;
 
 var _usersInfo = require("../../data/usersInfo");
 
-var curentUser = 0;
+var _orders = require("./orders");
+
+var _progressOfOrder = require("../../data/progressOfOrder");
+
 var changeStatus = webix.ui({
   view: "window",
   id: "windowOrdersAdmin",
@@ -1663,7 +1696,7 @@ var changeStatus = webix.ui({
             on: {
               "onItemClick": function onItemClick(id) {
                 if (id === "2") {
-                  $$("textareaAdminWindow").config.value = curentUser.reasonStatus;
+                  $$("textareaAdminWindow").config.value = _orders.curentUser.reasonStatus;
                   $$("textareaAdminWindow").show();
                 } else {
                   $$("textareaAdminWindow").hide();
@@ -1684,12 +1717,14 @@ var changeStatus = webix.ui({
         click: function click() {
           var value = $$("textareaAdminWindow").getValue();
           var comboValue = $$("comboInForm").getText();
-          progressOfOrder.find(function (item) {
-            if (item.orderNumber === curentUser.orderNumber) {
+
+          _progressOfOrder.progressOfOrder.find(function (item) {
+            if (item.orderNumber === _orders.curentUser.orderNumber) {
               item.reasonStatus = value;
               item.status = comboValue;
             }
           });
+
           $$("adminForm").clear();
           $$("windowOrdersAdmin").hide();
           $$("datatableOrders").refresh();
@@ -1702,13 +1737,13 @@ var changeStatus = webix.ui({
   }
 });
 exports.changeStatus = changeStatus;
-},{"../../data/usersInfo":"data/usersInfo.js"}],"views/admin/orders.js":[function(require,module,exports) {
+},{"../../data/usersInfo":"data/usersInfo.js","./orders":"views/admin/orders.js","../../data/progressOfOrder":"data/progressOfOrder.js"}],"views/admin/orders.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.adminOrders = void 0;
+exports.adminOrders = exports.curentUser = void 0;
 
 var _progressOfOrder = require("../../data/progressOfOrder");
 
@@ -1716,6 +1751,8 @@ var _prodacts = require("../../data/prodacts");
 
 var _changeStatus = require("./changeStatus");
 
+var curentUser = 0;
+exports.curentUser = curentUser;
 var adminOrders = {
   view: "datatable",
   id: "datatableOrders",
@@ -1723,6 +1760,7 @@ var adminOrders = {
   select: true,
   fixedRowHeight: false,
   rowHeight: 80,
+  resizeColumn: true,
   data: _progressOfOrder.progressOfOrder,
   columns: [{
     id: "orderNumber",
@@ -1785,7 +1823,7 @@ var adminOrders = {
   }],
   onClick: {
     "status_admin_change": function status_admin_change() {
-      curentUser = this.getSelectedItem();
+      exports.curentUser = curentUser = this.getSelectedItem();
       $$("adminForm").refresh();
 
       _changeStatus.changeStatus.show();
@@ -1965,33 +2003,19 @@ var adminSet = {
   }]
 };
 exports.adminSet = adminSet;
-},{"./clientsInfo":"views/admin/clientsInfo.js","./orders":"views/admin/orders.js","./addNewProdact":"views/admin/addNewProdact.js"}],"script.js":[function(require,module,exports) {
+},{"./clientsInfo":"views/admin/clientsInfo.js","./orders":"views/admin/orders.js","./addNewProdact":"views/admin/addNewProdact.js"}],"views/shopPages/header.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.showCurrentUserOrders = exports.toolbar = void 0;
+exports.toolbar = void 0;
 
-var _prodacts = require("./data/prodacts");
+var _usersInfo = require("../../data/usersInfo");
 
-var _datatable = require("./views/datatable");
+var _script = require("../../script");
 
-var _pageGoods = require("./views/pageGoods");
-
-var _order = require("./data/order");
-
-var _pageOrder = require("./views/pageOrder");
-
-var _pageHistory = require("./views/pageHistory");
-
-var _startPage = require("./views/autorization/startPage");
-
-var _usersInfo = require("./data/usersInfo");
-
-var _progressOfOrder = require("./data/progressOfOrder");
-
-var _navigation = require("./views/admin/navigation");
+var _order = require("../../data/order");
 
 var toolbar = {
   view: "toolbar",
@@ -2048,7 +2072,7 @@ var toolbar = {
     width: 120,
     click: function click() {
       $$("shop").show();
-      showCurrentUserOrders();
+      (0, _script.showCurrentUserOrders)();
       $$("tableHistory").show();
     }
   }, {
@@ -2071,6 +2095,40 @@ var toolbar = {
   }]
 };
 exports.toolbar = toolbar;
+},{"../../data/usersInfo":"data/usersInfo.js","../../script":"script.js","../../data/order":"data/order.js"}],"script.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+Object.defineProperty(exports, "toolbar", {
+  enumerable: true,
+  get: function () {
+    return _header.toolbar;
+  }
+});
+exports.showCurrentUserOrders = void 0;
+
+var _prodacts = require("./data/prodacts");
+
+var _selectProdacts = require("./views/shopPages/prodactsObserve/selectProdacts");
+
+var _Bag = require("./views/shopPages/Bag");
+
+var _pageOrder = require("./views/shopPages/pageOrder");
+
+var _pageHistory = require("./views/shopPages/history/pageHistory");
+
+var _startPage = require("./views/autorization/startPage");
+
+var _usersInfo = require("./data/usersInfo");
+
+var _progressOfOrder = require("./data/progressOfOrder");
+
+var _navigation = require("./views/admin/navigation");
+
+var _header = require("./views/shopPages/header");
+
 var treeNavigation = {
   view: "tree",
   select: true,
@@ -2099,12 +2157,12 @@ var shop = {
   id: "shop",
   cols: [treeNavigation, {
     animate: false,
-    cells: [_datatable.datatable, _pageGoods.pageGoods, _pageOrder.pageOrder, _pageHistory.tableHistory]
+    cells: [_selectProdacts.datatable, _Bag.pageGoods, _pageOrder.pageOrder, _pageHistory.tableHistory]
   }]
 };
 var shopPage = {
   id: "shopPage",
-  rows: [toolbar, {
+  rows: [_header.toolbar, {
     cells: [shop, _navigation.adminSet]
   }]
 };
@@ -2133,7 +2191,7 @@ var showCurrentUserOrders = function showCurrentUserOrders() {
 };
 
 exports.showCurrentUserOrders = showCurrentUserOrders;
-},{"./data/prodacts":"data/prodacts.js","./views/datatable":"views/datatable.js","./views/pageGoods":"views/pageGoods.js","./data/order":"data/order.js","./views/pageOrder":"views/pageOrder.js","./views/pageHistory":"views/pageHistory.js","./views/autorization/startPage":"views/autorization/startPage.js","./data/usersInfo":"data/usersInfo.js","./data/progressOfOrder":"data/progressOfOrder.js","./views/admin/navigation":"views/admin/navigation.js"}],"C:/Users/User/AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"./data/prodacts":"data/prodacts.js","./views/shopPages/prodactsObserve/selectProdacts":"views/shopPages/prodactsObserve/selectProdacts.js","./views/shopPages/Bag":"views/shopPages/Bag.js","./views/shopPages/pageOrder":"views/shopPages/pageOrder.js","./views/shopPages/history/pageHistory":"views/shopPages/history/pageHistory.js","./views/autorization/startPage":"views/autorization/startPage.js","./data/usersInfo":"data/usersInfo.js","./data/progressOfOrder":"data/progressOfOrder.js","./views/admin/navigation":"views/admin/navigation.js","./views/shopPages/header":"views/shopPages/header.js"}],"C:/Users/User/AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -2161,7 +2219,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "61275" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "56106" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
