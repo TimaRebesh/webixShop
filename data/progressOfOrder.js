@@ -1,32 +1,36 @@
-import {prodacts} from "./prodacts";
-import {currentUser} from "./usersInfo";
+import { prodacts } from "./prodacts";
+import { currentUser } from "./usersInfo";
 
 const progressOfOrderServer = [
 	{
-		prodactsId: 1,
-		amount: 1,
+		orderNumber: "22",
+		prodactsId: "1",
+		amount: "1",
 		address: "Minsk",
 		delivery: "Post",
-		payment: "Card",
+		payment: "Cash",
 		orderDate: new Date(2012, 11, 12),
 		status: "Declined",
-		orderUserName: "",
-		mail: "",
-		tel: "",
-		userId: 1
+		reasonStatus: "Prodacts was lost somewhere, sorry",
+		orderUserName: "mommy",
+		mail: "james@gmail.com",
+		tel: "474-544-33",
+		userId: "1"
 	},
 	{
-		prodactsId: 9,
-		amount: 1,
+		orderNumber: "34",
+		prodactsId: "9",
+		amount: "1",
 		address: "Krit",
 		delivery: "Post",
 		payment: "Card",
 		orderDate: new Date(2019, 11, 12),
 		status: "Declined",
-		orderUserName: "",
-		mail: "",
-		tel: "",
-		userId: 2
+		reasonStatus: "no product available",
+		orderUserName: "DODo",
+		mail: "bobmail@gmail.com",
+		tel: "4345-545-666",
+		userId: "2"
 	}
 ];
 const progressOfOrder = new webix.DataCollection({
@@ -43,4 +47,4 @@ const progressOfOrder = new webix.DataCollection({
 	data: progressOfOrderServer
 });
 
-export {progressOfOrder};
+export { progressOfOrder };

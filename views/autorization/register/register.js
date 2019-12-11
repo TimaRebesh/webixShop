@@ -1,38 +1,7 @@
-/* eslint-disable no-param-reassign */
-/* eslint-disable no-undef */
-import { usersInfo, currentUser } from "../data/usersInfo";
-import { windowLogin } from "./autPageLogin";
+import { usersInfo, currentUser } from "../../../data/usersInfo";
 
-const toolbar = {
-	view: "toolbar",
-	id: "toolbarAuthorization",
-	padding: 3,
-	elements: [
-		{
-			view: "label",
-			label: "<span class='label_color'>Phone Shop</span>"
-		},
-		{},
-		{
-			view: "button",
-			label: "Login",
-			width: 90,
-			click() {
-				$$("windowLogin").show();
-			}
-		},
-		{
-			view: "button",
-			label: "Register",
-			width: 150,
-			click() {
-				$$("windowRegister").show();
-			}
-		}
-	]
-};
 
-webix.ui({
+export const windowRegister = webix.ui({
 	view: "window",
 	id: "windowRegister",
 	modal: true,
@@ -145,15 +114,12 @@ webix.ui({
 										// create userInsfo
 										const values = form.getValues();
 
-										const arr = usersInfo.serialize();
-										const lastId = arr[arr.length - 1].userId;
-										const newId = lastId + 1;
-
 										let newObj = {
-											userId: newId,
+											userId: webix.uid(),
 											name: values.name,
 											email: values.mail,
 											password: values.password,
+											created: new Date(),
 										};
 
 										usersInfo.add(newObj, -1);
@@ -191,7 +157,6 @@ webix.ui({
 					},
 					password(vp) {
 						const value = vp.trim();
-						console.log(value)
 						return (
 							webix.rules.isNotEmpty(value) &&
 							value !== "" &&
@@ -215,12 +180,6 @@ webix.ui({
 		state.top = 100;
 	}
 });
-
-// eslint-disable-next-line import/prefer-default-export
-export const authorization = {
-	id: "authorization",
-	rows: [toolbar]
-};
 
 function ValidateEmail(mail) {
 	if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(mail)) {

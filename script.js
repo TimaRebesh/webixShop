@@ -1,11 +1,13 @@
 import { phones, prodacts } from "./data/prodacts";
 import { datatable } from "./views/datatable";
 import { pageGoods, table } from "./views/pageGoods";
+import { userOrder } from "./data/order";
 import { pageOrder } from "./views/pageOrder";
 import { tableHistory } from "./views/pageHistory";
-import { authorization } from "./views/authorizationPage";
-import { currentUser } from "./data/usersInfo";
+import { authorization } from "./views/autorization/startPage";
+import { currentUser, usersInfo } from "./data/usersInfo";
 import { progressOfOrder } from "./data/progressOfOrder";
+import { adminSet } from "./views/admin/navigation"
 
 const toolbar = {
 	view: "toolbar",
@@ -15,9 +17,22 @@ const toolbar = {
 	elements: [
 		{
 			view: "label",
+			width: 150,
 			label: "<span class='label_color'>Phone Shop</span>",
 			click: function () {
+				$$("shop").show();
 				$$("myDatatable").show();
+			}
+		},
+		{
+			view: "button",
+			id: "buttonToolbarAdmin",
+			label: "Admin's settings",
+			css: "button_toolbar_admin",
+			badge: "",
+			width: 150,
+			click: function () {
+				$$("adminSet").show()
 			}
 		},
 		{},
@@ -26,6 +41,9 @@ const toolbar = {
 			id: "labelShowName",
 			template: obj => {
 				let item = currentUser.serialize();
+				if (item[0].admin) {
+					return `<span class='label_color templ_position'>Hi admin!</span>`;
+				}
 				return `<span class='label_color templ_position'>Hi ${item[0].name}!</span>`;
 			}
 		},
@@ -37,6 +55,7 @@ const toolbar = {
 			badge: "",
 			width: 120,
 			click: function () {
+				$$("shop").show();
 				$$("tableOrdered").filter(function (obj) {
 					return obj.orderedAmount > 0;
 				});
@@ -49,8 +68,8 @@ const toolbar = {
 			label: "History",
 			width: 120,
 			click: function () {
-				filterData();
-				$$("tableHistory").refresh();
+				$$("shop").show();
+				showCurrentUserOrders();
 				$$("tableHistory").show();
 			}
 		},
@@ -59,9 +78,16 @@ const toolbar = {
 			label: "Logout",
 			width: 120,
 			click: function () {
+				userOrder.clearAll();
+				$$("buttonBage").config.badge = "";
+				$$("buttonBage").refresh();
+				$$("tableOrdered").clearAll();
+				$$("buttonToolbarAdmin").hide();
+				$$("myDatatable").clearSelection();
+				$$("myDatatable").scrollTo(0, 0);
 				$$("myDatatable").show();
 				$$("authorization").show();
-				$$("tableHistory").clearAll();
+				$$("shop").show();
 			}
 		}
 	]
@@ -71,7 +97,7 @@ const treeNavigation = {
 	view: "tree",
 	select: true,
 	data: phones,
-	width: 180,
+	width: 250,
 	on: {
 		onAfterSelect: function () {
 			let selectedItem = this.getSelectedItem().value;
@@ -91,19 +117,27 @@ const treeNavigation = {
 	}
 };
 
+let shop = {
+	id: "shop",
+	cols: [
+		treeNavigation,
+		{
+			animate: false,
+			cells: [datatable, pageGoods, pageOrder, tableHistory]
+		}
+	]
+};
+
+
+
 let shopPage = {
 	id: "shopPage",
 	rows: [
 		toolbar,
 		{
-			cols: [
-				treeNavigation,
-				{
-					animate: false,
-					cells: [datatable, pageGoods, pageOrder, tableHistory]
-				}
-			]
-		}
+			cells: [shop, adminSet]
+		},
+
 	]
 };
 
@@ -112,15 +146,21 @@ webix.ready(function () {
 		animate: false,
 		cells: [authorization, shopPage]
 	});
+
+	$$("buttonToolbarAdmin").hide();
+	$$("datatableCI").sync(usersInfo)
+	$$("textareaAdminWindow").hide()
 });
 
-function filterData() {
-	progressOfOrder.filter(function (obj) {
+const showCurrentUserOrders = function () {
+	const filteredOrders = $$("tableHistory").filter(function (obj) {
 		const item = currentUser.serialize();
-		if (obj.userId == item[0].userId) {
-			return obj;
-		}
+		if (obj.userId === item[0].userId) {
+			return true;
+		} return false;
 	});
+	$$("tableHistory").refresh()
+	return filteredOrders;
 }
 
-export { toolbar };
+export { toolbar, showCurrentUserOrders };

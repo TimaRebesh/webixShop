@@ -436,7 +436,7 @@ var datatable = {
   type: {
     myCounter: function myCounter(obj, common, value, column, index) {
       value = 0;
-      return "<div class='webix_el_group buttons_counter'>\n              <button type='button' class='webix_inp_counter_prev' tabindex='-1' >-</button>\n              \n              <input type='text' readonly class='webix_inp_counter_value' value=".concat(obj.amount, "></input>\n              <button type='button' class='webix_inp_counter_next' tabindex='-1'>+</button>\n              </div>");
+      return "<div class='webix_el_group buttons_counter'>\n              <button type='button' class='webix_inp_counter_prev' tabindex='-1' >-</button>\n\n              <input type='text' readonly class='webix_inp_counter_value' value=".concat(obj.amount, "></input>\n              <button type='button' class='webix_inp_counter_next' tabindex='-1'>+</button>\n              </div>");
     }
   },
   onClick: {
@@ -452,7 +452,7 @@ var datatable = {
     image_buy: function image_buy() {
       var selected = this.getSelectedItem();
 
-      if (selected.amount == undefined || selected.amount === 0) {
+      if (!selected.amount) {
         return webix.message("please, select goods");
       }
 
@@ -470,7 +470,7 @@ var datatable = {
 
       var count = 0;
 
-      var a = _order.userOrder.filter(function (obj) {
+      _order.userOrder.find(function (obj) {
         return count += obj.orderedAmount;
       });
 
@@ -634,15 +634,18 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.currentUser = exports.usersInfo = void 0;
 var usersInfoServer = [{
-  userId: 1,
+  userId: "1",
   name: "James",
   email: "james@gmail.com",
-  password: 1
+  password: "1",
+  created: new Date(2016, 5, 4),
+  admin: true
 }, {
-  userId: 2,
-  firstname: "Dilan",
+  userId: "2",
+  name: "Dilana",
   email: "bobmail@gmail.com",
-  password: 2
+  password: "2",
+  created: new Date(2009, 11, 12)
 }];
 var usersInfo = new webix.DataCollection({
   data: usersInfoServer
@@ -650,7 +653,7 @@ var usersInfo = new webix.DataCollection({
 exports.usersInfo = usersInfo;
 var exam = [{
   name: "user",
-  userId: 0
+  userId: "0"
 }];
 var currentUser = new webix.DataCollection({
   data: exam
@@ -669,29 +672,33 @@ var _prodacts = require("./prodacts");
 var _usersInfo = require("./usersInfo");
 
 var progressOfOrderServer = [{
-  prodactsId: 1,
-  amount: 1,
+  orderNumber: "22",
+  prodactsId: "1",
+  amount: "1",
   address: "Minsk",
   delivery: "Post",
-  payment: "Card",
+  payment: "Cash",
   orderDate: new Date(2012, 11, 12),
   status: "Declined",
-  orderUserName: "",
-  mail: "",
-  tel: "",
-  userId: 1
+  reasonStatus: "Prodacts was lost somewhere, sorry",
+  orderUserName: "mommy",
+  mail: "james@gmail.com",
+  tel: "474-544-33",
+  userId: "1"
 }, {
-  prodactsId: 9,
-  amount: 1,
+  orderNumber: "34",
+  prodactsId: "9",
+  amount: "1",
   address: "Krit",
   delivery: "Post",
   payment: "Card",
   orderDate: new Date(2019, 11, 12),
   status: "Declined",
-  orderUserName: "",
-  mail: "",
-  tel: "",
-  userId: 2
+  reasonStatus: "no product available",
+  orderUserName: "DODo",
+  mail: "bobmail@gmail.com",
+  tel: "4345-545-666",
+  userId: "2"
 }];
 var progressOfOrder = new webix.DataCollection({
   scheme: {
@@ -778,6 +785,7 @@ var form = {
 
         var item = _usersInfo.currentUser.serialize();
 
+        newObj.orderNumber = webix.uid();
         newObj.orderUserName = formValue.text1;
         newObj.mail = formValue.text2;
         newObj.tel = formValue.text3;
@@ -790,8 +798,17 @@ var form = {
 
         _progressOfOrder.progressOfOrder.add(newObj, -1);
       }); //
-      //
 
+
+      $$("tableHistory").filter(function (obj) {
+        var item = _usersInfo.currentUser.serialize();
+
+        if (obj.userId === item[0].userId) {
+          return true;
+        }
+
+        return false;
+      }); //
 
       _order.userOrder.clearAll();
 
@@ -957,11 +974,13 @@ var _progressOfOrder = require("../data/progressOfOrder");
 
 var _usersInfo = require("../data/usersInfo");
 
+var selectProdactOfOrdered = "";
 var tableHistory = {
   view: "datatable",
   id: "tableHistory",
   css: "data_style",
   fixedRowHeight: false,
+  select: true,
   rowHeight: 50,
   tooltip: true,
   data: _progressOfOrder.progressOfOrder,
@@ -1011,12 +1030,19 @@ var tableHistory = {
         return obj.status;
       }
 
-      return "\n              <button type='button' class='button_status' tabindex='-1' >".concat(obj.status, "</button>\n              ");
+      return "\n              <button type='button' class='button_status' tabindex='-1' gridId=".concat(obj.id, " >").concat(obj.status, "</button>\n              ");
     }
   },
   onClick: {
-    button_status: function button_status() {
-      $$("windowProgress").show();
+    button_status: function button_status(ev, cellInfo) {
+      var selectedOrderedProdact = this.getItem(cellInfo.row);
+
+      if (selectedOrderedProdact.status === "Declined") {
+        $$("progressDetails").config.details = selectedOrderedProdact.reasonStatus;
+        $$("windowProgress").show();
+      }
+
+      return;
     }
   }
 };
@@ -1044,10 +1070,270 @@ webix.ui({
     }]
   },
   body: {
-    template: "<p class=\"window_progress_text\">Product was lost</p>"
+    view: "template",
+    id: "progressDetails",
+    details: "",
+    template: function template() {
+      return "<p class=\"window_progress_text\">".concat($$("progressDetails").config.details, "</p>");
+    }
   }
 });
-},{"../data/progressOfOrder":"data/progressOfOrder.js","../data/usersInfo":"data/usersInfo.js"}],"views/autPageLogin.js":[function(require,module,exports) {
+},{"../data/progressOfOrder":"data/progressOfOrder.js","../data/usersInfo":"data/usersInfo.js"}],"views/autorization/register/register.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.windowRegister = void 0;
+
+var _usersInfo = require("../../../data/usersInfo");
+
+var windowRegister = webix.ui({
+  view: "window",
+  id: "windowRegister",
+  modal: true,
+  label: {
+    width: 140
+  },
+  head: {
+    view: "toolbar",
+    type: "clean",
+    cols: [{
+      template: "Register",
+      css: "window_toolbar_progress"
+    }, {
+      view: "icon",
+      icon: "mdi mdi-close",
+      css: "alter",
+      hotkey: "esc",
+      click: function click() {
+        $$("windowRegister").hide();
+        $$("formInWindowRegister").clearValidation();
+        $$("formInWindowRegister").clear();
+      }
+    }]
+  },
+  body: {
+    type: "clean",
+    cols: [{
+      width: 100
+    }, {
+      view: "form",
+      id: "formInWindowRegister",
+      width: 500,
+      elementsConfig: {
+        labelWidth: 150
+      },
+      elements: [{
+        view: "text",
+        label: "Name",
+        type: "text",
+        name: "name",
+        attributes: {
+          required: "true",
+          title: "Enter your name",
+          maxlength: 22
+        },
+        on: {
+          onBlur: function onBlur() {
+            var curretnValue = this.config.value;
+            this.config.value = curretnValue.trim();
+            this.refresh();
+          }
+        }
+      }, {
+        view: "text",
+        type: "email",
+        value: "newuser@gmail.com",
+        label: "E-Mail Address",
+        id: "email",
+        name: "mail",
+        attributes: {
+          required: "true",
+          title: "Enter your email"
+        },
+        invalidMessage: "",
+        on: {
+          onBlur: function onBlur() {
+            var curretnValue = this.config.value;
+            this.config.value = curretnValue.trim();
+            this.refresh();
+          }
+        }
+      }, {
+        view: "text",
+        type: "password",
+        id: "password",
+        label: "Password",
+        name: "password",
+        attributes: {
+          required: "true",
+          title: "Create your password"
+        },
+        invalidMessage: "The password confirmation does not match"
+      }, {
+        view: "text",
+        type: "password",
+        id: "comfPassword",
+        label: "Confirm Password",
+        name: "confPassword",
+        attributes: {
+          required: "true",
+          title: "repeat password"
+        },
+        invalidMessage: ""
+      }, {
+        cols: [{
+          width: 150
+        }, {
+          view: "button",
+          value: "Register",
+          css: "webix_primary",
+          width: 150,
+          click: function click() {
+            var form = $$("formInWindowRegister");
+
+            if (form.validate()) {
+              // create userInsfo
+              var values = form.getValues();
+              var newObj = {
+                userId: webix.uid(),
+                name: values.name,
+                email: values.mail,
+                password: values.password,
+                created: new Date()
+              };
+
+              _usersInfo.usersInfo.add(newObj, -1);
+
+              _usersInfo.currentUser.clearAll();
+
+              _usersInfo.currentUser.add(newObj);
+
+              $$("labelShowName").refresh(); //
+
+              $$("formInWindowRegister").clear();
+              $$("windowRegister").hide();
+              $$("shopPage").show();
+            }
+          }
+        }, {}]
+      }],
+      rules: {
+        name: webix.rules.isNotEmpty,
+        mail: function mail(val) {
+          var switcher = 0;
+          var value = val.trim();
+
+          _usersInfo.usersInfo.find(function (obj) {
+            if (obj.email === value) {
+              $$("email").config.invalidMessage = "The email has already been taken";
+              switcher = 1;
+            } else {
+              $$("email").config.invalidMessage = "The email is not correct";
+            }
+          });
+
+          return webix.rules.isEmail(value) && switcher !== 1 && ValidateEmail(value);
+        },
+        password: function password(vp) {
+          var value = vp.trim();
+          return webix.rules.isNotEmpty(value) && value !== "" && value === $$("comfPassword").getValue();
+        },
+        confPassword: function confPassword(vp) {
+          var password = $$("password").getValue();
+          var value = vp.trim();
+
+          if (value !== password) {
+            $$("comfPassword").config.value = "";
+          }
+
+          return webix.rules.isNotEmpty(value) && value === password;
+        }
+      }
+    }, {
+      width: 100
+    }]
+  },
+  position: function position(state) {
+    state.top = 100;
+  }
+});
+exports.windowRegister = windowRegister;
+
+function ValidateEmail(mail) {
+  if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(mail)) {
+    return true;
+  }
+
+  return false;
+}
+},{"../../../data/usersInfo":"data/usersInfo.js"}],"views/autorization/login/forgotPassword.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.windowResetPass = void 0;
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var windowResetPass = webix.ui(_defineProperty({
+  view: "window",
+  id: "windowResetPass",
+  modal: true,
+  position: "center",
+  head: {
+    view: "toolbar",
+    type: "clean",
+    cols: [{
+      template: "Reset Password",
+      css: "window_toolbar_progress"
+    }, {
+      view: "icon",
+      icon: "mdi mdi-close",
+      css: "alter",
+      hotkey: "esc",
+      click: function click() {
+        $$("windowResetPass").hide();
+      }
+    }]
+  },
+  body: {
+    type: "clean",
+    cols: [{
+      width: 100
+    }, {
+      view: "form",
+      id: "formWindowResetPass",
+      width: 500,
+      elementsConfig: {
+        labelWidth: 120
+      },
+      elements: [{
+        view: "text",
+        label: "E-Mail Address",
+        name: "email",
+        attributes: {
+          required: "true",
+          title: "Enter your email"
+        }
+      }, {
+        view: "button",
+        value: "Send Password Reset Link",
+        css: "webix_primary button_reset",
+        width: 250,
+        click: function click() {}
+      }]
+    }, {
+      width: 100
+    }]
+  }
+}, "position", function position(state) {
+  state.top = 100;
+}));
+exports.windowResetPass = windowResetPass;
+},{}],"views/autorization/login/login.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1055,11 +1341,12 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.windowLogin = void 0;
 
-var _usersInfo = require("../data/usersInfo");
+var _usersInfo = require("../../../data/usersInfo");
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+var _script = require("../../../script");
 
-// eslint-disable-next-line no-undef
+var _forgotPassword = require("./forgotPassword");
+
 var windowLogin = webix.ui({
   view: "window",
   id: "windowLogin",
@@ -1116,6 +1403,7 @@ var windowLogin = webix.ui({
         view: "text",
         id: "emailLogin",
         label: "E-Mail Address",
+        value: "james@gmail.com",
         name: "email",
         attributes: {
           required: "true",
@@ -1125,6 +1413,7 @@ var windowLogin = webix.ui({
         view: "text",
         type: "password",
         id: "passwordLogin",
+        value: 1,
         label: "Password",
         name: "password",
         attributes: {
@@ -1149,6 +1438,8 @@ var windowLogin = webix.ui({
               click: function click() {
                 var values = $$("formWindowLogin").getValues();
                 var checkboxValue = $$("checkboxLogin").getValue();
+                var password = values.password.trim();
+                var email = values.email.trim();
                 var name = "shopWebix";
                 var value = 0;
 
@@ -1161,7 +1452,11 @@ var windowLogin = webix.ui({
 
                 _usersInfo.usersInfo.find(function (obj) {
                   // currentUser;
-                  if (values.email === obj.email && values.password === obj.password) {
+                  if (email === obj.email && password === obj.password) {
+                    if (obj.admin) {
+                      $$("buttonToolbarAdmin").show();
+                    }
+
                     isFound = true;
 
                     _usersInfo.currentUser.clearAll();
@@ -1169,7 +1464,7 @@ var windowLogin = webix.ui({
                     _usersInfo.currentUser.add(obj);
 
                     $$("labelShowName").refresh();
-                    $$("tableHistory").refresh();
+                    (0, _script.showCurrentUserOrders)();
                     $$("formWindowLogin").clear();
                     $$("windowLogin").hide();
                     $$("shopPage").show();
@@ -1206,61 +1501,7 @@ var windowLogin = webix.ui({
   }
 });
 exports.windowLogin = windowLogin;
-webix.ui(_defineProperty({
-  view: "window",
-  id: "windowResetPass",
-  modal: true,
-  position: "center",
-  head: {
-    view: "toolbar",
-    type: "clean",
-    cols: [{
-      template: "Reset Password",
-      css: "window_toolbar_progress"
-    }, {
-      view: "icon",
-      icon: "mdi mdi-close",
-      css: "alter",
-      hotkey: "esc",
-      click: function click() {
-        $$("windowResetPass").hide();
-      }
-    }]
-  },
-  body: {
-    type: "clean",
-    cols: [{
-      width: 100
-    }, {
-      view: "form",
-      id: "formWindowResetPass",
-      width: 500,
-      elementsConfig: {
-        labelWidth: 120
-      },
-      elements: [{
-        view: "text",
-        label: "E-Mail Address",
-        name: "email",
-        attributes: {
-          required: "true",
-          title: "Enter your email"
-        }
-      }, {
-        view: "button",
-        value: "Send Password Reset Link",
-        css: "webix_primary button_reset",
-        width: 250,
-        click: function click() {}
-      }]
-    }, {
-      width: 100
-    }]
-  }
-}, "position", function position(state) {
-  state.top = 100;
-}));
-},{"../data/usersInfo":"data/usersInfo.js"}],"views/authorizationPage.js":[function(require,module,exports) {
+},{"../../../data/usersInfo":"data/usersInfo.js","../../../script":"script.js","./forgotPassword":"views/autorization/login/forgotPassword.js"}],"views/autorization/startPage.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1268,13 +1509,10 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.authorization = void 0;
 
-var _usersInfo = require("../data/usersInfo");
+var _register = require("./register/register");
 
-var _autPageLogin = require("./autPageLogin");
+var _login = require("./login/login");
 
-/* eslint-disable no-param-reassign */
-
-/* eslint-disable no-undef */
 var toolbar = {
   view: "toolbar",
   id: "toolbarAuthorization",
@@ -1287,29 +1525,103 @@ var toolbar = {
     label: "Login",
     width: 90,
     click: function click() {
-      $$("windowLogin").show();
+      _login.windowLogin.show();
     }
   }, {
     view: "button",
     label: "Register",
     width: 150,
     click: function click() {
-      $$("windowRegister").show();
+      _register.windowRegister.show();
     }
   }]
 };
-webix.ui({
+var authorization = {
+  id: "authorization",
+  rows: [toolbar, {
+    view: "template",
+    position: "center",
+    template: "<img class='image_on_start_page' src='https://img.global.news.samsung.com/global/wp-content/uploads/2018/05/Samsung-Themes_main_1.jpg'/>"
+  }]
+};
+exports.authorization = authorization;
+},{"./register/register":"views/autorization/register/register.js","./login/login":"views/autorization/login/login.js"}],"views/admin/clientsInfo.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.adminClietsInfo = void 0;
+
+var _usersInfo = require("../../data/usersInfo");
+
+var adminClietsInfo = {
+  view: "datatable",
+  id: "datatableCI",
+  css: "data_style",
+  editable: true,
+  editaction: "dblclick",
+  fixedRowHeight: false,
+  rowHeight: 80,
+  data: _usersInfo.usersInfo,
+  columns: [{
+    id: "userId",
+    header: "#",
+    sort: "int",
+    fillspace: 0.5
+  }, {
+    id: "name",
+    header: ["Name", {
+      content: "textFilter"
+    }],
+    sort: "string",
+    fillspace: 1,
+    editor: "text",
+    template: function template(obj) {
+      if (obj.admin) {
+        return "<div>admin</div>";
+      }
+
+      return "<div>".concat(obj.name, "</div>");
+    }
+  }, {
+    id: "email",
+    header: ["Email", {
+      content: "textFilter"
+    }],
+    editor: "text",
+    fillspace: 3
+  }, {
+    id: "created",
+    header: "created at",
+    sort: "int",
+    format: webix.Date.dateToStr("%Y-%m-%d %H:%i"),
+    editor: "date",
+    fillspace: 1
+  }]
+};
+exports.adminClietsInfo = adminClietsInfo;
+},{"../../data/usersInfo":"data/usersInfo.js"}],"views/admin/changeStatus.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.changeStatus = void 0;
+
+var _usersInfo = require("../../data/usersInfo");
+
+var curentUser = 0;
+var changeStatus = webix.ui({
   view: "window",
-  id: "windowRegister",
+  id: "windowOrdersAdmin",
   modal: true,
-  label: {
-    width: 140
-  },
+  position: "center",
   head: {
     view: "toolbar",
     type: "clean",
     cols: [{
-      template: "Register",
+      template: "Change status",
       css: "window_toolbar_progress"
     }, {
       view: "icon",
@@ -1317,7 +1629,9 @@ webix.ui({
       css: "alter",
       hotkey: "esc",
       click: function click() {
-        $$("windowRegister").hide();
+        $$("windowOrdersAdmin").hide();
+        $$("adminForm").clear();
+        $$("textareaAdminWindow").hide();
       }
     }]
   },
@@ -1327,145 +1641,337 @@ webix.ui({
       width: 100
     }, {
       view: "form",
-      id: "formInWindowRegister",
+      id: "adminForm",
       width: 500,
       elementsConfig: {
-        labelWidth: 150
+        labelWidth: 120
       },
       elements: [{
-        view: "text",
-        label: "Name",
-        type: "text",
-        name: "name",
-        attributes: {
-          required: "true",
-          title: "Enter your name",
-          maxlength: 22
-        }
-      }, {
-        view: "text",
-        type: "email",
-        value: "newuser@gmail.com",
-        label: "E-Mail Address",
-        id: "email",
-        name: "mail",
-        attributes: {
-          required: "true",
-          title: "Enter your email"
-        },
-        invalidMessage: ""
-      }, {
-        view: "text",
-        type: "password",
-        id: "password",
-        label: "Password",
-        name: "password",
-        attributes: {
-          required: "true",
-          title: "Create your password"
-        },
-        invalidMessage: "The password confirmation does not match"
-      }, {
-        view: "text",
-        type: "password",
-        id: "comfPassword",
-        label: "Confirm Password",
-        name: "confPassword",
-        attributes: {
-          required: "true",
-          title: "repeat password"
-        },
-        invalidMessage: ""
-      }, {
-        cols: [{
-          width: 150
-        }, {
-          view: "button",
-          value: "Register",
-          css: "webix_primary",
-          width: 150,
-          click: function click() {
-            var form = $$("formInWindowRegister");
-
-            if (form.validate()) {
-              // create userInsfo
-              var values = form.getValues();
-              var newObj = {};
-
-              var arr = _usersInfo.usersInfo.serialize();
-
-              var lastId = arr[arr.length - 1].userId;
-              var newId = lastId + 1;
-              newObj.userId = newId;
-              newObj.name = values.name;
-              newObj.email = values.mail;
-              newObj.password = values.password;
-
-              _usersInfo.usersInfo.add(newObj, -1);
-
-              _usersInfo.currentUser.clearAll();
-
-              _usersInfo.currentUser.add(newObj);
-
-              $$("labelShowName").refresh(); //
-
-              $$("formInWindowRegister").clear();
-              $$("windowRegister").hide();
-              $$("shopPage").show();
+        view: "combo",
+        id: "comboInForm",
+        name: "status",
+        label: "Choose status",
+        options: {
+          body: {
+            data: [{
+              id: 1,
+              value: "in progress"
+            }, {
+              id: 2,
+              value: "Declined"
+            }],
+            on: {
+              "onItemClick": function onItemClick(id) {
+                if (id === "2") {
+                  $$("textareaAdminWindow").config.value = curentUser.reasonStatus;
+                  $$("textareaAdminWindow").show();
+                } else {
+                  $$("textareaAdminWindow").hide();
+                }
+              }
             }
           }
-        }, {}]
-      }],
-      rules: {
-        name: webix.rules.isNotEmpty,
-        mail: function mail(value) {
-          var flag = 0;
-
-          _usersInfo.usersInfo.find(function (obj) {
-            if (obj.email === value) {
-              $$("email").config.invalidMessage = "The email has already been taken";
-              flag = 1;
-            } else {
-              $$("email").config.invalidMessage = "The email is not correct";
+        }
+      }, {
+        view: "textarea",
+        name: "reason",
+        id: "textareaAdminWindow",
+        label: "Indicate reason"
+      }, {
+        view: "button",
+        value: "Save",
+        css: "webix_primary",
+        click: function click() {
+          var value = $$("textareaAdminWindow").getValue();
+          var comboValue = $$("comboInForm").getText();
+          progressOfOrder.find(function (item) {
+            if (item.orderNumber === curentUser.orderNumber) {
+              item.reasonStatus = value;
+              item.status = comboValue;
             }
           });
-
-          return webix.rules.isEmail(value) && flag !== 1;
-        },
-        password: function password(value) {
-          return webix.rules.isNotEmpty(value) && value !== "" && value === $$("comfPassword").getValue();
-        },
-        confPassword: function confPassword(value) {
-          var password = $$("password").getValue();
-
-          if (value !== password) {
-            $$("comfPassword").config.value = "";
-          }
-
-          return webix.rules.isNotEmpty(value) && value === password;
+          $$("adminForm").clear();
+          $$("windowOrdersAdmin").hide();
+          $$("datatableOrders").refresh();
+          $$("textareaAdminWindow").hide();
         }
-      }
+      }]
     }, {
       width: 100
     }]
-  },
-  position: function position(state) {
-    state.top = 100;
   }
-}); // eslint-disable-next-line import/prefer-default-export
-
-var authorization = {
-  id: "authorization",
-  rows: [toolbar]
-};
-exports.authorization = authorization;
-},{"../data/usersInfo":"data/usersInfo.js","./autPageLogin":"views/autPageLogin.js"}],"script.js":[function(require,module,exports) {
+});
+exports.changeStatus = changeStatus;
+},{"../../data/usersInfo":"data/usersInfo.js"}],"views/admin/orders.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.toolbar = void 0;
+exports.adminOrders = void 0;
+
+var _progressOfOrder = require("../../data/progressOfOrder");
+
+var _prodacts = require("../../data/prodacts");
+
+var _changeStatus = require("./changeStatus");
+
+var adminOrders = {
+  view: "datatable",
+  id: "datatableOrders",
+  css: "data_style",
+  select: true,
+  fixedRowHeight: false,
+  rowHeight: 80,
+  data: _progressOfOrder.progressOfOrder,
+  columns: [{
+    id: "orderNumber",
+    header: "#",
+    sort: "int",
+    fillspace: 1
+  }, {
+    header: ["Product", {
+      content: "textFilter"
+    }],
+    sort: "string",
+    fillspace: 3,
+    template: function template(obj) {
+      var value = "";
+
+      _prodacts.prodacts.find(function (item) {
+        if (item.id === obj.prodactsId) {
+          value = item.value + " " + item.model;
+        }
+      });
+
+      return "<div>".concat(value, "</div>");
+    }
+  }, {
+    id: "amount",
+    head: "Amount",
+    fillspace: 1
+  }, {
+    id: "orderUserName",
+    header: ["Buyer name", {
+      content: "textFilter"
+    }],
+    fillspace: 1
+  }, {
+    id: "tel",
+    header: "Phone",
+    fillspace: 1
+  }, {
+    id: "address",
+    header: "Address",
+    fillspace: 1
+  }, {
+    id: "delivery",
+    header: "Delivery",
+    fillspace: 1
+  }, {
+    id: "payment",
+    header: "Payment",
+    fillspace: 1
+  }, {
+    id: "orderDate",
+    header: "Order date",
+    fillspace: 2,
+    format: webix.Date.dateToStr("%Y-%m-%d %H:%i")
+  }, {
+    id: "status",
+    header: "Status",
+    fillspace: 1,
+    css: "status_admin_change"
+  }],
+  onClick: {
+    "status_admin_change": function status_admin_change() {
+      curentUser = this.getSelectedItem();
+      $$("adminForm").refresh();
+
+      _changeStatus.changeStatus.show();
+    }
+  }
+};
+exports.adminOrders = adminOrders;
+},{"../../data/progressOfOrder":"data/progressOfOrder.js","../../data/prodacts":"data/prodacts.js","./changeStatus":"views/admin/changeStatus.js"}],"views/admin/addNewProdact.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.addNewProdact = void 0;
+
+var _prodacts = require("../../data/prodacts");
+
+var currentPhoto = "";
+var addNewProdact = {
+  id: "addNewProdact",
+  type: "clean",
+  rows: [{
+    view: "form",
+    id: "formAddNewProdact",
+    width: 500,
+    elementsConfig: {
+      labelWidth: 150
+    },
+    elements: [{
+      view: "text",
+      label: "Company",
+      name: "company",
+      type: "text",
+      placeholder: "Type company name",
+      required: true
+    }, {
+      view: "text",
+      label: "Model",
+      name: "model",
+      type: "text",
+      placeholder: "Type model name",
+      required: true
+    }, {
+      view: "text",
+      label: "Price",
+      name: "price",
+      type: "number",
+      placeholder: "Type price",
+      required: true
+    }, {
+      cols: [{
+        view: "label",
+        label: "Picture:",
+        width: 150
+      }, {
+        view: "uploader",
+        value: "Add picture",
+        // name: "loadImage",
+        accept: "image/jpeg, image/png",
+        autosend: false,
+        multiple: false,
+        on: {
+          onBeforeFileAdd: function onBeforeFileAdd(upload) {
+            var file = upload.file;
+            var reader = new FileReader();
+
+            reader.onload = function (event) {
+              currentPhoto = event.target.result;
+              $$("imagePreview").setValues({
+                src: event.target.result
+              });
+            };
+
+            reader.readAsDataURL(file);
+            return false;
+          }
+        }
+      }]
+    }, {
+      view: "template",
+      id: "imagePreview",
+      template: "<img src='#src#' class='fit_image'></img>"
+    }, {
+      cols: [{
+        view: "button",
+        value: "Add new product",
+        css: "webix_primary",
+        width: 300,
+        click: function click() {
+          // let form = this.getParentView();
+          var form = $$("formAddNewProdact");
+
+          if (form.validate()) {
+            var getValuesFromForm = $$("formAddNewProdact").getValues();
+            var saveNewProduct = {
+              id: webix.uid(),
+              value: getValuesFromForm.company,
+              model: getValuesFromForm.model,
+              price: getValuesFromForm.price,
+              rating: 0,
+              orderedAmount: 0,
+              sum: 0,
+              amount: 0,
+              image: currentPhoto
+            };
+
+            _prodacts.prodacts.add(saveNewProduct, -1);
+
+            webix.message("new product has been added");
+            $$("formAddNewProdact").clear();
+            $$("imagePreview").setValues({
+              src: ""
+            });
+            currentPhoto = "";
+          }
+        }
+      }, {
+        view: "button",
+        value: "Clear form",
+        click: function click() {
+          $$("formAddNewProdact").clear();
+          $$("imagePreview").setValues({
+            src: ""
+          });
+          currentPhoto = "";
+        }
+      }]
+    }],
+    rules: {
+      "company": webix.rules.isNotEmpty,
+      "model": webix.rules.isNotEmpty,
+      "price": webix.rules.isNotEmpty
+    }
+  }, {}]
+};
+exports.addNewProdact = addNewProdact;
+},{"../../data/prodacts":"data/prodacts.js"}],"views/admin/navigation.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.adminSet = void 0;
+
+var _clientsInfo = require("./clientsInfo");
+
+var _orders = require("./orders");
+
+var _addNewProdact = require("./addNewProdact");
+
+var menuData = [{
+  id: "datatableCI",
+  value: "Clients info"
+}, {
+  id: "datatableOrders",
+  value: "Orders"
+}, {
+  id: "addNewProdact",
+  value: "Add new product"
+}];
+var adminNavigation = {
+  view: "sidebar",
+  id: "adminNavigation",
+  width: 250,
+  data: menuData,
+  on: {
+    onAfterSelect: function onAfterSelect(id) {
+      $$(id).show();
+    }
+  }
+};
+var adminSet = {
+  id: "adminSet",
+  cols: [adminNavigation, {
+    cells: [_clientsInfo.adminClietsInfo, _orders.adminOrders, _addNewProdact.addNewProdact],
+    animate: false
+  }]
+};
+exports.adminSet = adminSet;
+},{"./clientsInfo":"views/admin/clientsInfo.js","./orders":"views/admin/orders.js","./addNewProdact":"views/admin/addNewProdact.js"}],"script.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.showCurrentUserOrders = exports.toolbar = void 0;
 
 var _prodacts = require("./data/prodacts");
 
@@ -1473,15 +1979,19 @@ var _datatable = require("./views/datatable");
 
 var _pageGoods = require("./views/pageGoods");
 
+var _order = require("./data/order");
+
 var _pageOrder = require("./views/pageOrder");
 
 var _pageHistory = require("./views/pageHistory");
 
-var _authorizationPage = require("./views/authorizationPage");
+var _startPage = require("./views/autorization/startPage");
 
 var _usersInfo = require("./data/usersInfo");
 
 var _progressOfOrder = require("./data/progressOfOrder");
+
+var _navigation = require("./views/admin/navigation");
 
 var toolbar = {
   view: "toolbar",
@@ -1490,15 +2000,31 @@ var toolbar = {
   padding: 3,
   elements: [{
     view: "label",
+    width: 150,
     label: "<span class='label_color'>Phone Shop</span>",
     click: function click() {
+      $$("shop").show();
       $$("myDatatable").show();
+    }
+  }, {
+    view: "button",
+    id: "buttonToolbarAdmin",
+    label: "Admin's settings",
+    css: "button_toolbar_admin",
+    badge: "",
+    width: 150,
+    click: function click() {
+      $$("adminSet").show();
     }
   }, {}, {
     view: "label",
     id: "labelShowName",
     template: function template(obj) {
       var item = _usersInfo.currentUser.serialize();
+
+      if (item[0].admin) {
+        return "<span class='label_color templ_position'>Hi admin!</span>";
+      }
 
       return "<span class='label_color templ_position'>Hi ".concat(item[0].name, "!</span>");
     }
@@ -1509,6 +2035,7 @@ var toolbar = {
     badge: "",
     width: 120,
     click: function click() {
+      $$("shop").show();
       $$("tableOrdered").filter(function (obj) {
         return obj.orderedAmount > 0;
       });
@@ -1520,8 +2047,8 @@ var toolbar = {
     label: "History",
     width: 120,
     click: function click() {
-      filterData();
-      $$("tableHistory").refresh();
+      $$("shop").show();
+      showCurrentUserOrders();
       $$("tableHistory").show();
     }
   }, {
@@ -1529,9 +2056,17 @@ var toolbar = {
     label: "Logout",
     width: 120,
     click: function click() {
+      _order.userOrder.clearAll();
+
+      $$("buttonBage").config.badge = "";
+      $$("buttonBage").refresh();
+      $$("tableOrdered").clearAll();
+      $$("buttonToolbarAdmin").hide();
+      $$("myDatatable").clearSelection();
+      $$("myDatatable").scrollTo(0, 0);
       $$("myDatatable").show();
       $$("authorization").show();
-      $$("tableHistory").clearAll();
+      $$("shop").show();
     }
   }]
 };
@@ -1540,7 +2075,7 @@ var treeNavigation = {
   view: "tree",
   select: true,
   data: _prodacts.phones,
-  width: 180,
+  width: 250,
   on: {
     onAfterSelect: function onAfterSelect() {
       var selectedItem = this.getSelectedItem().value;
@@ -1560,32 +2095,45 @@ var treeNavigation = {
     }
   }
 };
+var shop = {
+  id: "shop",
+  cols: [treeNavigation, {
+    animate: false,
+    cells: [_datatable.datatable, _pageGoods.pageGoods, _pageOrder.pageOrder, _pageHistory.tableHistory]
+  }]
+};
 var shopPage = {
   id: "shopPage",
   rows: [toolbar, {
-    cols: [treeNavigation, {
-      animate: false,
-      cells: [_datatable.datatable, _pageGoods.pageGoods, _pageOrder.pageOrder, _pageHistory.tableHistory]
-    }]
+    cells: [shop, _navigation.adminSet]
   }]
 };
 webix.ready(function () {
   webix.ui({
     animate: false,
-    cells: [_authorizationPage.authorization, shopPage]
+    cells: [_startPage.authorization, shopPage]
   });
+  $$("buttonToolbarAdmin").hide();
+  $$("datatableCI").sync(_usersInfo.usersInfo);
+  $$("textareaAdminWindow").hide();
 });
 
-function filterData() {
-  _progressOfOrder.progressOfOrder.filter(function (obj) {
+var showCurrentUserOrders = function showCurrentUserOrders() {
+  var filteredOrders = $$("tableHistory").filter(function (obj) {
     var item = _usersInfo.currentUser.serialize();
 
-    if (obj.userId == item[0].userId) {
-      return obj;
+    if (obj.userId === item[0].userId) {
+      return true;
     }
+
+    return false;
   });
-}
-},{"./data/prodacts":"data/prodacts.js","./views/datatable":"views/datatable.js","./views/pageGoods":"views/pageGoods.js","./views/pageOrder":"views/pageOrder.js","./views/pageHistory":"views/pageHistory.js","./views/authorizationPage":"views/authorizationPage.js","./data/usersInfo":"data/usersInfo.js","./data/progressOfOrder":"data/progressOfOrder.js"}],"C:/Users/User/AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+  $$("tableHistory").refresh();
+  return filteredOrders;
+};
+
+exports.showCurrentUserOrders = showCurrentUserOrders;
+},{"./data/prodacts":"data/prodacts.js","./views/datatable":"views/datatable.js","./views/pageGoods":"views/pageGoods.js","./data/order":"data/order.js","./views/pageOrder":"views/pageOrder.js","./views/pageHistory":"views/pageHistory.js","./views/autorization/startPage":"views/autorization/startPage.js","./data/usersInfo":"data/usersInfo.js","./data/progressOfOrder":"data/progressOfOrder.js","./views/admin/navigation":"views/admin/navigation.js"}],"C:/Users/User/AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -1613,7 +2161,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "51555" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "61275" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

@@ -110,7 +110,7 @@
   font-size: 14px;
   color: #686868;
   text-align: left;
-  width: 100px;
+  width: 80px;
   height: 40px;
   border: 3px solid #262727;
 }
@@ -134,4 +134,21 @@
 
 .button_reset {
   padding-left: 120px;
+}
+
+.button_toolbar_admin {
+  background-color: #fdfa36;
+}
+
+.fit_image {
+  max-width:100%;
+  max-height:100%;
+}
+
+.image_on_start_page {
+  padding-top: 100px;
+  max-width:100%;
+  max-height:100%;
+  display: block;
+  margin: 0 auto;
 }

@@ -1,23 +1,25 @@
 const usersInfoServer = [
 	{
-		userId: 1,
+		userId: "1",
 		name: "James",
 		email: "james@gmail.com",
-		password: "1"
+		password: "1",
+		created: new Date(2016, 5, 4),
+		admin: true
 	},
 	{
-		userId: 2,
-		name: "Dilan",
+		userId: "2",
+		name: "Dilana",
 		email: "bobmail@gmail.com",
 		password: "2",
-		admin: true
+		created: new Date(2009, 11, 12),
 	}
 ];
 
 let usersInfo = new webix.DataCollection({ data: usersInfoServer });
 
-// const exam = [{ name: "user", userId: 0 }];
+const exam = [{ name: "user", userId: "0" }];
 
-let currentUser = new webix.DataCollection({ data: usersInfo });
+let currentUser = new webix.DataCollection({ data: exam });
 
 export { usersInfo, currentUser };

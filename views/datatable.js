@@ -14,7 +14,6 @@ let datatable = {
 	fixedRowHeight: false,
 	rowHeight: 100,
 	data: prodacts,
-
 	select: true,
 	columns: [
 		{
