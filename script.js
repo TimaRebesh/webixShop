@@ -1,13 +1,12 @@
-import { phones, prodacts, createPhonesData } from "./data/prodacts";
-import { datatable } from "./views/shopPages/prodactsObserve/selectProdacts";
-import { pageGoods, table } from "./views/shopPages/Bag";
-import { pageOrder } from "./views/shopPages/pageOrder";
-import { tableHistory } from "./views/shopPages/history/pageHistory";
-import { authorization } from "./views/autorization/startPage";
-import { currentUser, usersInfo } from "./data/usersInfo";
-import { progressOfOrder } from "./data/progressOfOrder";
-import { adminSet } from "./views/admin/navigation";
-import { toolbar } from "./views/shopPages/header"
+import {phones} from "./data/prodacts";
+import {datatable} from "./views/shopPages/prodactsObserve/selectProdacts";
+import {pageGoods} from "./views/shopPages/Bag";
+import {pageOrder} from "./views/shopPages/pageOrder";
+import {tableHistory} from "./views/shopPages/history/pageHistory";
+import {authorization} from "./views/autorization/startPage";
+import {currentUser, usersInfo} from "./data/usersInfo";
+import {adminSet} from "./views/admin/navigation";
+import {toolbar} from "./views/shopPages/header";
 
 const treeNavigation = {
 	view: "tree",
@@ -15,23 +14,24 @@ const treeNavigation = {
 	select: true,
 	data: phones,
 	width: 250,
-	ready: function () {
+	ready() {
 		this.openAll();
 	},
 	on: {
-		onAfterSelect: function () {
+		onAfterSelect() {
 			let selectedItem = this.getSelectedItem().value;
 			if (selectedItem == "Phones") {
-				$$("myDatatable").filter(function (obj) {
+				$$("myDatatable").filter((obj) => {
 					return obj.value;
 				});
-			} else {
-				$$("myDatatable").filter(function (obj) {
+			}
+ else {
+				$$("myDatatable").filter((obj) => {
 					return obj.value === selectedItem;
 				});
 			}
 		},
-		onItemClick: function () {
+		onItemClick() {
 			$$("myDatatable").show();
 		}
 	}
@@ -54,30 +54,30 @@ const shopPage = {
 		toolbar,
 		{
 			cells: [shop, adminSet]
-		},
+		}
 	]
 };
 
-webix.ready(function () {
+webix.ready(() => {
 	webix.ui({
 		animate: false,
 		cells: [authorization, shopPage]
 	});
 
 	$$("buttonToolbarAdmin").hide();
-	$$("datatableCI").sync(usersInfo)
-	$$("textareaAdminWindow").hide()
+	$$("datatableCI").sync(usersInfo);
+	$$("textareaAdminWindow").hide();
 });
 
 const showCurrentUserOrders = function () {
-	const filteredOrders = $$("tableHistory").filter(function (obj) {
+	const filteredOrders = $$("tableHistory").filter((obj) => {
 		const item = currentUser.serialize();
 		if (obj.userId === item[0].userId) {
 			return true;
 		} return false;
 	});
-	$$("tableHistory").refresh()
+	$$("tableHistory").refresh();
 	return filteredOrders;
-}
+};
 
-export { toolbar, showCurrentUserOrders };
+export {toolbar, showCurrentUserOrders};
