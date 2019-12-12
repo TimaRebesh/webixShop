@@ -106,119 +106,36 @@ const prodactsServer = [
 		sum: 0,
 		amount: 0,
 		image: "https://mobidevices.ru/images/2014/04/Nokia-33101.jpg"
-	}
+	},
+
 ];
 
-const prodacts = new webix.DataCollection({data: prodactsServer});
+const prodacts = new webix.DataCollection({ data: prodactsServer });
 
 // convert data of prodacts to data of phones
-const phones = [
-	{
-		id: 1,
-		open: true,
-		value: "Phones",
-		data: []
-	}
-];
-
 function createPhonesData() {
-	let set = new Set();
-	let idFirstNum = 1.1;
-
-	prodactsServer.forEach((obj) => {
-		let newObject = {};
-
-		if (!set.has(obj.value)) {
-			set.add(obj.value);
-
-			idFirstNum += 0.1;
-
-			newObject.id = String(idFirstNum.toFixed(1));
-			newObject.value = obj.value;
-
-			phones[0].data.push(newObject);
+	const objTree = [
+		{
+			id: 1,
+			value: "Phones",
+			data: []
+		}
+	];
+	let getUniqueValues = new Set();
+	const jasonformat = prodacts.serialize()
+	jasonformat.forEach((obj) => {
+		if (!getUniqueValues.has(obj.value)) {
+			getUniqueValues.add(obj.value);
+			let newObject = {
+				id: webix.uid(),
+				value: obj.value
+			};
+			objTree[0].data.push(newObject);
 		}
 	});
+	return objTree
 }
-createPhonesData();
 
-// сonvert all data of prodacts to all treedata
-let prodactsTreeData = [];
+let phones = new webix.DataCollection({ data: createPhonesData() });
 
-let set = new Set();
-let idFirstNum = 0;
-let idSecondNum = 0;
-
-prodactsServer.forEach((obj) => {
-	let objTree = {};
-	let value = obj.value;
-
-	if (!set.has(obj.value)) {
-		set.add(obj.value);
-
-		idFirstNum++;
-		idSecondNum++;
-		objTree.id = String(idFirstNum);
-		objTree.value = obj.value;
-
-		let objBranch = {};
-		objBranch.id = String(`${idFirstNum}.${idSecondNum}`);
-		objBranch.value = obj.model;
-		objBranch.price = obj.price;
-		objBranch.rating = obj.rating;
-
-		objTree.data = [];
-		objTree.data.push(objBranch);
-
-		prodactsTreeData.push(objTree);
-	}
-	else {
-		prodactsTreeData.forEach((item) => {
-			if (item.value === value) {
-				let objBranch = {};
-
-				// eslint-disable-next-line no-inner-declarations
-				function createId() {
-					const idPreviousObj = item.data[item.data.length - 1].id;
-
-					let mark = false;
-					const arr = [];
-					// eslint-disable-next-line no-restricted-syntax
-					for (let letter of idPreviousObj) {
-						if (mark === true) {
-							arr.push(letter);
-						}
-						if (letter === ".") {
-							mark = true;
-						}
-					}
-					let NumberOfLast = Number(arr.join("")) + 1;
-
-					let mark2 = false;
-					const arr2 = [];
-					// eslint-disable-next-line no-restricted-syntax
-					for (let letter of idPreviousObj) {
-						if (mark2 === false) {
-							arr2.push(letter);
-						}
-						if (letter === ".") {
-							mark2 = true;
-						}
-					}
-					let createId2 = arr2.join("") + String(NumberOfLast);
-					return createId2;
-				}
-
-				objBranch.id = createId();
-				objBranch.value = obj.model;
-				objBranch.price = obj.price;
-				objBranch.rating = obj.rating;
-
-				item.data.push(objBranch);
-			}
-		});
-	}
-	idSecondNum = 0;
-});
-
-export {prodacts, phones};
+export { prodacts, phones };

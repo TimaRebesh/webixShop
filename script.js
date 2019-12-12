@@ -1,4 +1,4 @@
-import { phones, prodacts } from "./data/prodacts";
+import { phones, prodacts, createPhonesData } from "./data/prodacts";
 import { datatable } from "./views/shopPages/prodactsObserve/selectProdacts";
 import { pageGoods, table } from "./views/shopPages/Bag";
 import { pageOrder } from "./views/shopPages/pageOrder";
@@ -11,9 +11,13 @@ import { toolbar } from "./views/shopPages/header"
 
 const treeNavigation = {
 	view: "tree",
+	id: "treeNavigation",
 	select: true,
 	data: phones,
 	width: 250,
+	ready: function () {
+		this.openAll();
+	},
 	on: {
 		onAfterSelect: function () {
 			let selectedItem = this.getSelectedItem().value;

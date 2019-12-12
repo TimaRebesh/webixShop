@@ -222,145 +222,32 @@ var prodacts = new webix.DataCollection({
 }); // convert data of prodacts to data of phones
 
 exports.prodacts = prodacts;
-var phones = [{
-  id: 1,
-  open: true,
-  value: "Phones",
-  data: []
-}];
-exports.phones = phones;
 
 function createPhonesData() {
-  var set = new Set();
-  var idFirstNum = 1.1;
-  prodactsServer.forEach(function (obj) {
-    var newObject = {};
-
-    if (!set.has(obj.value)) {
-      set.add(obj.value);
-      idFirstNum += 0.1;
-      newObject.id = String(idFirstNum.toFixed(1));
-      newObject.value = obj.value;
-      phones[0].data.push(newObject);
+  var objTree = [{
+    id: 1,
+    value: "Phones",
+    data: []
+  }];
+  var getUniqueValues = new Set();
+  var jasonformat = prodacts.serialize();
+  jasonformat.forEach(function (obj) {
+    if (!getUniqueValues.has(obj.value)) {
+      getUniqueValues.add(obj.value);
+      var newObject = {
+        id: webix.uid(),
+        value: obj.value
+      };
+      objTree[0].data.push(newObject);
     }
   });
+  return objTree;
 }
 
-createPhonesData(); // сonvert all data of prodacts to all treedata
-
-var prodactsTreeData = [];
-var set = new Set();
-var idFirstNum = 0;
-var idSecondNum = 0;
-prodactsServer.forEach(function (obj) {
-  var objTree = {};
-  var value = obj.value;
-
-  if (!set.has(obj.value)) {
-    set.add(obj.value);
-    idFirstNum++;
-    idSecondNum++;
-    objTree.id = String(idFirstNum);
-    objTree.value = obj.value;
-    var objBranch = {};
-    objBranch.id = String("".concat(idFirstNum, ".").concat(idSecondNum));
-    objBranch.value = obj.model;
-    objBranch.price = obj.price;
-    objBranch.rating = obj.rating;
-    objTree.data = [];
-    objTree.data.push(objBranch);
-    prodactsTreeData.push(objTree);
-  } else {
-    prodactsTreeData.forEach(function (item) {
-      if (item.value === value) {
-        // eslint-disable-next-line no-inner-declarations
-        var createId = function createId() {
-          var idPreviousObj = item.data[item.data.length - 1].id;
-          var mark = false;
-          var arr = []; // eslint-disable-next-line no-restricted-syntax
-
-          var _iteratorNormalCompletion = true;
-          var _didIteratorError = false;
-          var _iteratorError = undefined;
-
-          try {
-            for (var _iterator = idPreviousObj[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-              var letter = _step.value;
-
-              if (mark === true) {
-                arr.push(letter);
-              }
-
-              if (letter === ".") {
-                mark = true;
-              }
-            }
-          } catch (err) {
-            _didIteratorError = true;
-            _iteratorError = err;
-          } finally {
-            try {
-              if (!_iteratorNormalCompletion && _iterator.return != null) {
-                _iterator.return();
-              }
-            } finally {
-              if (_didIteratorError) {
-                throw _iteratorError;
-              }
-            }
-          }
-
-          var NumberOfLast = Number(arr.join("")) + 1;
-          var mark2 = false;
-          var arr2 = []; // eslint-disable-next-line no-restricted-syntax
-
-          var _iteratorNormalCompletion2 = true;
-          var _didIteratorError2 = false;
-          var _iteratorError2 = undefined;
-
-          try {
-            for (var _iterator2 = idPreviousObj[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-              var _letter = _step2.value;
-
-              if (mark2 === false) {
-                arr2.push(_letter);
-              }
-
-              if (_letter === ".") {
-                mark2 = true;
-              }
-            }
-          } catch (err) {
-            _didIteratorError2 = true;
-            _iteratorError2 = err;
-          } finally {
-            try {
-              if (!_iteratorNormalCompletion2 && _iterator2.return != null) {
-                _iterator2.return();
-              }
-            } finally {
-              if (_didIteratorError2) {
-                throw _iteratorError2;
-              }
-            }
-          }
-
-          var createId2 = arr2.join("") + String(NumberOfLast);
-          return createId2;
-        };
-
-        var _objBranch = {};
-        _objBranch.id = createId();
-        _objBranch.value = obj.model;
-        _objBranch.price = obj.price;
-        _objBranch.rating = obj.rating;
-        item.data.push(_objBranch);
-      }
-    });
-  }
-
-  idSecondNum = 0;
+var phones = new webix.DataCollection({
+  data: createPhonesData()
 });
+exports.phones = phones;
 },{}],"data/order.js":[function(require,module,exports) {
 "use strict";
 
@@ -1937,7 +1824,22 @@ var addNewProdact = {
             $$("imagePreview").setValues({
               src: ""
             });
-            currentPhoto = "";
+            currentPhoto = ""; //  add info in tree
+
+            var ifExist = false;
+            $$("treeNavigation").find(function (obj) {
+              if (obj.value === saveNewProduct.value) ifExist = true;
+            });
+
+            if (ifExist === false) {
+              var first = $$("treeNavigation").getFirstId();
+              $$("treeNavigation").add({
+                id: saveNewProduct.id,
+                value: saveNewProduct.value
+              }, -1, first);
+            }
+
+            $$("treeNavigation").refresh();
           }
         }
       }, {
@@ -2131,9 +2033,13 @@ var _header = require("./views/shopPages/header");
 
 var treeNavigation = {
   view: "tree",
+  id: "treeNavigation",
   select: true,
   data: _prodacts.phones,
   width: 250,
+  ready: function ready() {
+    this.openAll();
+  },
   on: {
     onAfterSelect: function onAfterSelect() {
       var selectedItem = this.getSelectedItem().value;
@@ -2219,7 +2125,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "56106" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "64274" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

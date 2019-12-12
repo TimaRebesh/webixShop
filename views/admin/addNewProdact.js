@@ -1,4 +1,4 @@
-import { prodacts } from "../../data/prodacts"
+import { prodacts, createPhonesData, phones } from "../../data/prodacts"
 
 let currentPhoto = "";
 
@@ -102,6 +102,19 @@ export const addNewProdact = {
 									$$("formAddNewProdact").clear();
 									$$("imagePreview").setValues({ src: "" });
 									currentPhoto = "";
+									//  add info in tree
+									let ifExist = false;
+									$$("treeNavigation").find((obj) => {
+										if (obj.value === saveNewProduct.value) ifExist = true;
+									});
+									if (ifExist === false) {
+										const first = $$("treeNavigation").getFirstId();
+										$$("treeNavigation").add({
+											id: saveNewProduct.id,
+											value: saveNewProduct.value,
+										}, -1, first);
+									}
+									$$("treeNavigation").refresh();
 								}
 							}
 						},
