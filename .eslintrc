@@ -1,0 +1,9 @@
+{
+  "extends": "./node_modules/eslint-xbsoftware/1__double_quotes_and_tabs/.eslintrc",
+  "globals": {
+    "$$": true,
+    "webix": true,
+    "FileReader": true,
+    "document": true
+  }
+}
