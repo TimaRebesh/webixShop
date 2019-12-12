@@ -106,11 +106,11 @@ const prodactsServer = [
 		sum: 0,
 		amount: 0,
 		image: "https://mobidevices.ru/images/2014/04/Nokia-33101.jpg"
-	},
+	}
 
 ];
 
-const prodacts = new webix.DataCollection({ data: prodactsServer });
+const prodacts = new webix.DataCollection({data: prodactsServer});
 
 // convert data of prodacts to data of phones
 function createPhonesData() {
@@ -122,7 +122,7 @@ function createPhonesData() {
 		}
 	];
 	let getUniqueValues = new Set();
-	const jasonformat = prodacts.serialize()
+	const jasonformat = prodacts.serialize();
 	jasonformat.forEach((obj) => {
 		if (!getUniqueValues.has(obj.value)) {
 			getUniqueValues.add(obj.value);
@@ -133,9 +133,9 @@ function createPhonesData() {
 			objTree[0].data.push(newObject);
 		}
 	});
-	return objTree
+	return objTree;
 }
 
-let phones = new webix.DataCollection({ data: createPhonesData() });
+const phones = new webix.DataCollection({data: createPhonesData()});
 
-export { prodacts, phones };
+export {prodacts, phones};

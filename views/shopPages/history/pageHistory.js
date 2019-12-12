@@ -1,8 +1,7 @@
-import { progressOfOrder } from "../../../data/progressOfOrder";
-import { windowProgress } from "./windowProgress"
-// import { currentUser } from "../../../data/usersInfo";
+/* eslint-disable import/prefer-default-export */
+import {progressOfOrder} from "../../../data/progressOfOrder";
+import {windowProgress} from "./windowProgress";
 
-// let selectProdactOfOrdered = "";
 
 export const tableHistory = {
 	view: "datatable",
@@ -16,7 +15,7 @@ export const tableHistory = {
 	columns: [
 		{
 			id: "prodact",
-			header: [{ text: "Prodacts" }, { content: "textFilter" }],
+			header: [{text: "Prodacts"}, {content: "textFilter"}],
 			fillspace: 2.5
 		},
 		{
@@ -58,7 +57,7 @@ export const tableHistory = {
 		}
 	],
 	type: {
-		status: function (obj) {
+		status(obj) {
 			if (obj.status !== "Declined") {
 				return obj.status;
 			}
@@ -68,16 +67,14 @@ export const tableHistory = {
 		}
 	},
 	onClick: {
-		button_status: function (ev, cellInfo) {
+		button_status(ev, cellInfo) {
 			const selectedOrderedProdact = this.getItem(cellInfo.row);
 			if (selectedOrderedProdact.status === "Declined") {
 				$$("progressDetails").config.details = selectedOrderedProdact.reasonStatus;
 				$$("progressDetails").refresh();
 				windowProgress.show();
-			} return
+			}
 		}
 	}
 };
-
-
 

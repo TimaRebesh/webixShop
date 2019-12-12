@@ -1,6 +1,7 @@
-import { usersInfo, currentUser } from "../../../data/usersInfo";
-import { showCurrentUserOrders } from "../../../script";
-import { windowResetPass } from "./forgotPassword"
+/* eslint-disable import/prefer-default-export */
+import {usersInfo, currentUser} from "../../../data/usersInfo";
+import {showCurrentUserOrders} from "../../../script";
+import {windowResetPass} from "./forgotPassword";
 
 // eslint-disable-next-line no-undef
 const windowLogin = webix.ui({
@@ -8,33 +9,32 @@ const windowLogin = webix.ui({
 	id: "windowLogin",
 	modal: true,
 	on: {
-		onBeforeShow: function () {
-
-			const arrCookies = (document.cookie).split(";");
-			arrCookies.forEach(item => {
+		onBeforeShow() {
+			const arrCookies = document.cookie.split(";");
+			arrCookies.forEach((item) => {
 				const arrValues = item.split("=");
-				arrValues.forEach((item, index) => {
-					if (item === ` shopWebix` && arrValues[1] !== "0") {
-
-						usersInfo.find(obj => {
-							if (obj.email == arrValues[1]) {
+				arrValues.forEach((value) => {
+					if (value === " shopWebix" && arrValues[1] !== "0") {
+						usersInfo.find((obj) => {
+							if (obj.email === arrValues[1]) {
 								$$("checkboxLogin").hide();
 								$$("emailLogin").config.value = obj.email;
-								$$("passwordLogin").config.value = obj.password
+								$$("passwordLogin").config.value = obj.password;
 								$$("emailLogin").refresh();
-								$$("passwordLogin").refresh()
+								$$("passwordLogin").refresh();
 							}
-						})
+							return true;
+						});
 					}
 				});
-			})
+			});
 		}
 	},
 	head: {
 		view: "toolbar",
 		type: "clean",
 		cols: [
-			{ template: "Login", css: "window_toolbar_progress" },
+			{template: "Login", css: "window_toolbar_progress"},
 			{
 				view: "icon",
 				icon: "mdi mdi-close",
@@ -49,7 +49,7 @@ const windowLogin = webix.ui({
 	body: {
 		type: "clean",
 		cols: [
-			{ width: 100 },
+			{width: 100},
 			{
 				view: "form",
 				id: "formWindowLogin",
@@ -83,7 +83,7 @@ const windowLogin = webix.ui({
 					},
 					{
 						cols: [
-							{ width: 120 },
+							{width: 120},
 							{
 								rows: [
 									{
@@ -111,13 +111,13 @@ const windowLogin = webix.ui({
 													if (checkboxValue === 1) {
 														value = values.email;
 													}
-													document.cookie = name + "=" + value;
+													document.cookie = `${name}=${value}`;
 
 													let isFound = false;
-													usersInfo.find(obj => {
+													usersInfo.find((obj) => {
 														// currentUser;
 														if (email === obj.email && password === obj.password) {
-															if (obj.admin) { $$("buttonToolbarAdmin").show() }
+															if (obj.admin) { $$("buttonToolbarAdmin").show(); }
 															isFound = true;
 															currentUser.clearAll();
 															currentUser.add(obj);
@@ -144,7 +144,7 @@ const windowLogin = webix.ui({
 												onClick: {
 													template_login() {
 														$$("windowLogin").hide();
-														$$("windowResetPass").show();
+														windowResetPass.show();
 													}
 												}
 											}
@@ -156,13 +156,14 @@ const windowLogin = webix.ui({
 					}
 				]
 			},
-			{ width: 100 }
+			{width: 100}
 		]
 	},
-	position(state) {
+	position(st) {
+		const state = st;
 		state.top = 100;
 	}
 });
 
 
-export { windowLogin };
+export {windowLogin};

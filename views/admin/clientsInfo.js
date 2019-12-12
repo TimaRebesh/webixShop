@@ -1,4 +1,5 @@
-import { usersInfo } from "../../data/usersInfo";
+/* eslint-disable import/prefer-default-export */
+import {usersInfo} from "../../data/usersInfo";
 
 const adminClietsInfo = {
 	view: "datatable",
@@ -11,22 +12,22 @@ const adminClietsInfo = {
 	resizeColumn: true,
 	data: usersInfo,
 	columns: [
-		{ id: "userId", header: "#", sort: "int", fillspace: 0.5 },
+		{id: "userId", header: "#", sort: "int", fillspace: 0.5},
 		{
 			id: "name",
-			header: ["Name", { content: "textFilter" }],
+			header: ["Name", {content: "textFilter"}],
 			sort: "string",
 			fillspace: 1,
 			editor: "text",
-			template: obj => {
+			template: (obj) => {
 				if (obj.admin) {
-					return `<div>admin</div>`;
+					return "<div>admin</div>";
 				}
 				return `<div>${obj.name}</div>`;
 			}
 
 		},
-		{ id: "email", header: ["Email", { content: "textFilter" }], editor: "text", fillspace: 3 },
+		{id: "email", header: ["Email", {content: "textFilter"}], editor: "text", fillspace: 3},
 		{
 			id: "created",
 			header: "created at",
@@ -36,6 +37,6 @@ const adminClietsInfo = {
 			fillspace: 1
 		}
 	]
-}
+};
 
-export { adminClietsInfo }
+export {adminClietsInfo};

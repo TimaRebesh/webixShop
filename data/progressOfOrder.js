@@ -1,5 +1,6 @@
-import { prodacts } from "./prodacts";
-import { currentUser } from "./usersInfo";
+/* eslint-disable import/prefer-default-export */
+import {prodacts} from "./prodacts";
+// import {currentUser} from "./usersInfo";
 
 const progressOfOrderServer = [
 	{
@@ -35,16 +36,17 @@ const progressOfOrderServer = [
 ];
 const progressOfOrder = new webix.DataCollection({
 	scheme: {
-		$init: (obj) => {
+		$init: (object) => {
+			const obj = object;
 			prodacts.find((item) => {
 				if (item.id === obj.prodactsId) {
-					// eslint-disable-next-line no-param-reassign
 					obj.prodact = `${item.value} ${item.model}`;
 				}
+				return true;
 			});
 		}
 	},
 	data: progressOfOrderServer
 });
 
-export { progressOfOrder };
+export {progressOfOrder};

@@ -1,5 +1,4 @@
+/* eslint-disable import/prefer-default-export */
 const userOrderServer = [];
-
-let userOrder = new webix.DataCollection({ data: userOrderServer });
-
-export { userOrder };
+const userOrder = new webix.DataCollection({data: userOrderServer});
+export {userOrder};

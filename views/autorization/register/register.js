@@ -1,4 +1,13 @@
-import { usersInfo, currentUser } from "../../../data/usersInfo";
+/* eslint-disable no-useless-escape */
+/* eslint-disable import/prefer-default-export */
+import {usersInfo, currentUser} from "../../../data/usersInfo";
+
+function ValidateEmail(mail) {
+	if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(mail)) {
+		return true;
+	}
+	return false;
+}
 
 
 export const windowRegister = webix.ui({
@@ -12,7 +21,7 @@ export const windowRegister = webix.ui({
 		view: "toolbar",
 		type: "clean",
 		cols: [
-			{ template: "Register", css: "window_toolbar_progress" },
+			{template: "Register", css: "window_toolbar_progress"},
 			{
 				view: "icon",
 				icon: "mdi mdi-close",
@@ -29,7 +38,7 @@ export const windowRegister = webix.ui({
 	body: {
 		type: "clean",
 		cols: [
-			{ width: 100 },
+			{width: 100},
 			{
 				view: "form",
 				id: "formInWindowRegister",
@@ -49,10 +58,10 @@ export const windowRegister = webix.ui({
 							maxlength: 22
 						},
 						on: {
-							onBlur: function () {
-								const curretnValue = this.config.value
+							onBlur() {
+								const curretnValue = this.config.value;
 								this.config.value = curretnValue.trim();
-								this.refresh()
+								this.refresh();
 							}
 						}
 					},
@@ -69,10 +78,10 @@ export const windowRegister = webix.ui({
 						},
 						invalidMessage: "",
 						on: {
-							onBlur: function () {
-								const curretnValue = this.config.value
+							onBlur() {
+								const curretnValue = this.config.value;
 								this.config.value = curretnValue.trim();
-								this.refresh()
+								this.refresh();
 							}
 						}
 					},
@@ -102,7 +111,7 @@ export const windowRegister = webix.ui({
 					},
 					{
 						cols: [
-							{ width: 150 },
+							{width: 150},
 							{
 								view: "button",
 								value: "Register",
@@ -119,7 +128,7 @@ export const windowRegister = webix.ui({
 											name: values.name,
 											email: values.mail,
 											password: values.password,
-											created: new Date(),
+											created: new Date()
 										};
 
 										usersInfo.add(newObj, -1);
@@ -173,17 +182,12 @@ export const windowRegister = webix.ui({
 					}
 				}
 			},
-			{ width: 100 }
+			{width: 100}
 		]
 	},
-	position(state) {
+	position(st) {
+		const state = st;
 		state.top = 100;
 	}
 });
 
-function ValidateEmail(mail) {
-	if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(mail)) {
-		return (true)
-	}
-	return (false)
-}

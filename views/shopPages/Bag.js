@@ -1,11 +1,11 @@
-import { pageOrder } from "./pageOrder";
-// import { prodacts } from "../../data/prodacts";
-import { userOrder } from "../../data/order";
+/* eslint-disable no-unused-vars */
+import {pageOrder} from "./pageOrder";
+import {userOrder} from "../../data/order";
 
 const defaultPhoto =
 	"https://docplayer.ru/docs-images/61/45953296/images/5-2.png";
 
-let table = {
+const table = {
 	view: "datatable",
 	id: "tableOrdered",
 	css: "data_style",
@@ -14,7 +14,8 @@ let table = {
 	footer: true,
 	data: userOrder,
 	scheme: {
-		$init: function (obj) {
+		$init(object) {
+			const obj = object;
 			obj.name = `${obj.value} ${obj.model}`;
 		}
 	},
@@ -25,14 +26,12 @@ let table = {
 			css: "style_for_image",
 			header: "Images",
 			fillspace: 2,
-			footer: { text: "Total", colspan: 1 },
+			footer: {text: "Total", colspan: 1},
 			template: obj =>
 				` <image class="image" src="${obj.image || defaultPhoto}" />`
 		},
 		{
-			template: obj => {
-				return `<div>${obj.value} ${obj.model}</div>`;
-			},
+			template: obj => `<div>${obj.value} ${obj.model}</div>`,
 			header: "Name",
 			fillspace: 8
 		},
@@ -49,7 +48,7 @@ let table = {
 			id: "sum",
 			header: "Sum",
 			fillspace: 2,
-			footer: { content: "summColumn" }
+			footer: {content: "summColumn"}
 		},
 		{
 			id: "",
@@ -68,8 +67,9 @@ let table = {
 				.then(() => {
 					userOrder.remove(id);
 					let count = 0;
-					let a = userOrder.filter(function (obj) {
-						return (count += obj.orderedAmount);
+					userOrder.filter((obj) => {
+						count += obj.orderedAmount;
+						return true;
 					});
 
 					$$("buttonBage").config.badge = count;
@@ -87,11 +87,12 @@ let buttons = {
 			css: "webix_primary",
 			value: "Make order",
 			width: 200,
-			click: function () {
+			click() {
 				let checkTable = $$("tableOrdered").getFirstId();
 				if (checkTable === undefined) {
 					webix.message("select prodacts to order");
-				} else {
+				}
+				else {
 					$$("pageOrder").show();
 				}
 			}
@@ -100,7 +101,7 @@ let buttons = {
 			view: "button",
 			value: "Back to Shop",
 			width: 200,
-			click: function () {
+			click() {
 				$$("myDatatable").show();
 			}
 		},
@@ -108,9 +109,9 @@ let buttons = {
 	]
 };
 
-let pageGoods = {
+const pageGoods = {
 	id: "pageGoods",
 	rows: [table, buttons]
 };
 
-export { pageGoods, table };
+export {pageGoods, table};

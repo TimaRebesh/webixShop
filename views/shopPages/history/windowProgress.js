@@ -1,3 +1,4 @@
+/* eslint-disable import/prefer-default-export */
 export const windowProgress = webix.ui({
 	view: "window",
 	id: "windowProgress",
@@ -8,13 +9,13 @@ export const windowProgress = webix.ui({
 		type: "clean",
 		css: "webix_primary",
 		elements: [
-			{ template: "Decline reason", css: "window_toolbar_progress" },
+			{template: "Decline reason", css: "window_toolbar_progress"},
 			{
 				view: "icon",
 				icon: "mdi mdi-close",
 				css: "alter",
 				hotkey: "esc",
-				click: function () {
+				click() {
 					$$("windowProgress").hide();
 				}
 			}
@@ -24,8 +25,6 @@ export const windowProgress = webix.ui({
 		view: "template",
 		id: "progressDetails",
 		details: "",
-		template: () => {
-			return `<p class="window_progress_text">${$$("progressDetails").config.details}</p>`
-		}
+		template: () => `<p class="window_progress_text">${$$("progressDetails").config.details}</p>`
 	}
 });

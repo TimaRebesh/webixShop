@@ -1,7 +1,7 @@
-import { prodacts, prodactsDC } from "../../../data/prodacts";
-import { userOrder } from "../../../data/order";
-import { windowDetails } from "./windowDetails"
-// import { toolbar } from "../../script";
+/* eslint-disable import/no-mutable-exports */
+import {prodacts} from "../../../data/prodacts";
+import {userOrder} from "../../../data/order";
+import {windowDetails} from "./windowDetails";
 
 const defaultPhoto =
 	"https://docplayer.ru/docs-images/61/45953296/images/5-2.png";
@@ -27,14 +27,12 @@ let datatable = {
         `
 		},
 		{
-			template: obj => {
-				return `<div>${obj.value} ${obj.model}</div>`;
-			},
-			header: [{ text: "Name" }, { content: "textFilter" }],
+			template: obj => `<div>${obj.value} ${obj.model}</div>`,
+			header: [{text: "Name"}, {content: "textFilter"}],
 			fillspace: 8
 		},
-		{ id: "price", header: "Price", fillspace: 2 },
-		{ id: "rating", header: "Rating", fillspace: 2 },
+		{id: "price", header: "Price", fillspace: 2},
+		{id: "rating", header: "Rating", fillspace: 2},
 		{
 			id: "amount",
 			header: "Amount",
@@ -45,12 +43,11 @@ let datatable = {
 			header: "Buy",
 			width: 100,
 			template:
-				"<image class='image_buy' src='http://pngimg.com/uploads/shopping_cart/shopping_cart_PNG3.png'></image>"
+				"<image class='imageBuy' src='http://pngimg.com/uploads/shopping_cart/shopping_cart_PNG3.png'></image>"
 		}
 	],
 	type: {
-		myCounter: function (obj, common, value, column, index) {
-			value = 0;
+		myCounter(obj) {
 			return `<div class='webix_el_group buttons_counter'>
               <button type='button' class='webix_inp_counter_prev' tabindex='-1' >-</button>
 
@@ -60,16 +57,16 @@ let datatable = {
 		}
 	},
 	onClick: {
-		webix_inp_counter_prev: function (e, id, node) {
-			if (this.getSelectedItem().amount == 0) return;
+		webix_inp_counter_prev() {
+			if (this.getSelectedItem().amount === 0) return;
 			this.getSelectedItem().amount--;
 			$$("myDatatable").refresh();
 		},
-		webix_inp_counter_next: function (event, cell, target) {
+		webix_inp_counter_next() {
 			this.getSelectedItem().amount++;
 			$$("myDatatable").refresh();
 		},
-		image_buy: function () {
+		imageBuy() {
 			let selected = this.getSelectedItem();
 
 			if (!selected.amount) {
@@ -84,14 +81,14 @@ let datatable = {
 
 			if (userOrder.exists(selected.id)) {
 				userOrder.updateItem(selected.id, selected);
-			} else {
+			}
+			else {
 				userOrder.add(selected, -1);
 			}
 
 			let count = 0;
-			userOrder.find(function (obj) {
-				return (count += obj.orderedAmount);
-			});
+			// eslint-disable-next-line no-return-assign
+			userOrder.find(obj => count += obj.orderedAmount);
 
 			$$("buttonBage").config.badge = count;
 			$$("buttonBage").refresh();
@@ -101,22 +98,23 @@ let datatable = {
 
 			selected.amount = 0;
 			$$("myDatatable").refresh();
+			return true;
 		}
 	},
 	on: {
-		onItemDblClick: function (obj) {
+		onItemDblClick() {
 			windowDetails.show();
 		},
 		onAfterSelect(id) {
 			curentSelectedItem = this.getItem(id);
 
 			$$("windowHead").setValues({
-				FirstName: this.getItem(id).value + " " + this.getItem(id).model
+				FirstName: `${this.getItem(id).value} ${this.getItem(id).model}`
 			});
 			$$("formInWindow").setValues({
-				Name: { name: this.getItem(id).value + " " + this.getItem(id).model },
-				Rating: { rating: this.getSelectedItem().rating },
-				Price: { price: this.getItem(id).price },
+				Name: {name: `${this.getItem(id).value} ${this.getItem(id).model}`},
+				Rating: {rating: this.getSelectedItem().rating},
+				Price: {price: this.getItem(id).price},
 				Image: {
 					picture: this.getItem(id).image
 				}
@@ -125,4 +123,4 @@ let datatable = {
 	}
 };
 
-export { datatable, curentSelectedItem };
+export {datatable, curentSelectedItem};

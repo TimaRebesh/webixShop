@@ -1,8 +1,9 @@
-import { prodacts, createPhonesData, phones } from "../../data/prodacts"
+/* eslint-disable import/prefer-default-export */
+import {prodacts} from "../../data/prodacts";
 
 let currentPhoto = "";
 
-export const addNewProdact = {
+const addNewProdact = {
 	id: "addNewProdact",
 	type: "clean",
 	rows: [
@@ -53,25 +54,24 @@ export const addNewProdact = {
 							autosend: false,
 							multiple: false,
 							on: {
-								onBeforeFileAdd: function (upload) {
-									var file = upload.file;
-									var reader = new FileReader();
-									reader.onload = function (event) {
+								onBeforeFileAdd(upload) {
+									let file = upload.file;
+									let reader = new FileReader();
+									reader.onload = function onl(event) {
 										currentPhoto = event.target.result;
-										$$("imagePreview").setValues({ src: event.target.result });
-
+										$$("imagePreview").setValues({src: event.target.result});
 									};
-									reader.readAsDataURL(file)
+									reader.readAsDataURL(file);
 									return false;
 								}
 							}
-						},
+						}
 					]
 				},
 				{
 					view: "template",
 					id: "imagePreview",
-					template: "<img src='#src#' class='fit_image'></img>",
+					template: "<img src='#src#' class='fit_image'></img>"
 				},
 				{
 					cols: [
@@ -80,9 +80,9 @@ export const addNewProdact = {
 							value: "Add new product",
 							css: "webix_primary",
 							width: 300,
-							click: function () {
+							click() {
 								// let form = this.getParentView();
-								let form = $$("formAddNewProdact")
+								let form = $$("formAddNewProdact");
 								if (form.validate()) {
 									const getValuesFromForm = $$("formAddNewProdact").getValues();
 
@@ -96,11 +96,11 @@ export const addNewProdact = {
 										sum: 0,
 										amount: 0,
 										image: currentPhoto
-									}
+									};
 									prodacts.add(saveNewProduct, -1);
-									webix.message("new product has been added")
+									webix.message("new product has been added");
 									$$("formAddNewProdact").clear();
-									$$("imagePreview").setValues({ src: "" });
+									$$("imagePreview").setValues({src: ""});
 									currentPhoto = "";
 									//  add info in tree
 									let ifExist = false;
@@ -111,7 +111,7 @@ export const addNewProdact = {
 										const first = $$("treeNavigation").getFirstId();
 										$$("treeNavigation").add({
 											id: saveNewProduct.id,
-											value: saveNewProduct.value,
+											value: saveNewProduct.value
 										}, -1, first);
 									}
 									$$("treeNavigation").refresh();
@@ -121,24 +121,23 @@ export const addNewProdact = {
 						{
 							view: "button",
 							value: "Clear form",
-							click: function () {
-								$$("formAddNewProdact").clear()
-								$$("imagePreview").setValues({ src: "" });
-								currentPhoto = ""
+							click() {
+								$$("formAddNewProdact").clear();
+								$$("imagePreview").setValues({src: ""});
+								currentPhoto = "";
 							}
 						}
 					]
 				}
 			],
 			rules: {
-				"company": webix.rules.isNotEmpty,
-				"model": webix.rules.isNotEmpty,
-				"price": webix.rules.isNotEmpty,
-			},
+				company: webix.rules.isNotEmpty,
+				model: webix.rules.isNotEmpty,
+				price: webix.rules.isNotEmpty
+			}
 		},
 		{}
 	]
-}
+};
 
-
-
+export {addNewProdact};

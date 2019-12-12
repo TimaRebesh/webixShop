@@ -1,6 +1,7 @@
-import { userOrder } from "../../data/order";
-import { progressOfOrder } from "../../data/progressOfOrder";
-import { currentUser } from "../../data/usersInfo";
+/* eslint-disable import/prefer-default-export */
+import {userOrder} from "../../data/order";
+import {progressOfOrder} from "../../data/progressOfOrder";
+import {currentUser} from "../../data/usersInfo";
 
 let form = {
 	view: "form",
@@ -55,10 +56,11 @@ let form = {
 			view: "button",
 			css: "webix_primary",
 			value: "Checkout",
-			click: function () {
+			click() {
 				if (this.getParentView().validate()) {
 					//  create order progress
-					userOrder.find(obj => {
+					// eslint-disable-next-line array-callback-return
+					userOrder.find((obj) => {
 						let newObj = {};
 						newObj.prodactsId = obj.id;
 						newObj.amount = obj.orderedAmount;
@@ -80,7 +82,7 @@ let form = {
 						progressOfOrder.add(newObj, -1);
 					});
 					//
-					$$("tableHistory").filter(function (obj) {
+					$$("tableHistory").filter((obj) => {
 						const item = currentUser.serialize();
 						if (obj.userId === item[0].userId) {
 							return true;
@@ -100,21 +102,21 @@ let form = {
 		text1: webix.rules.isNotEmpty,
 		text2: webix.rules.isEmail,
 		text3: webix.rules.isNotEmpty,
-		text3: webix.rules.isNotEmpty
+		text4: webix.rules.isNotEmpty
 	},
 	elementsConfig: {
 		labelWidth: 200
 	}
 };
 
-let pageOrder = {
+const pageOrder = {
 	id: "pageOrder",
 	type: "clean",
 	cols: [
-		{ width: 50 },
-		{ type: "clean", rows: [{ height: 50 }, form, { fillspace: 1 }] },
-		{ maxWidth: 650 }
+		{width: 50},
+		{type: "clean", rows: [{height: 50}, form, {fillspace: 1}]},
+		{maxWidth: 650}
 	]
 };
 
-export { pageOrder };
+export {pageOrder};

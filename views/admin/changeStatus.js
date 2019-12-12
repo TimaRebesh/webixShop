@@ -1,6 +1,5 @@
-import { usersInfo } from "../../data/usersInfo"
-import { curentUser } from "./orders"
-import { progressOfOrder } from "../../data/progressOfOrder";
+import {curentUser} from "./orders";
+import {progressOfOrder} from "../../data/progressOfOrder";
 
 
 const changeStatus = webix.ui({
@@ -12,7 +11,7 @@ const changeStatus = webix.ui({
 		view: "toolbar",
 		type: "clean",
 		cols: [
-			{ template: "Change status", css: "window_toolbar_progress" },
+			{template: "Change status", css: "window_toolbar_progress"},
 			{
 				view: "icon",
 				icon: "mdi mdi-close",
@@ -21,7 +20,7 @@ const changeStatus = webix.ui({
 				click() {
 					$$("windowOrdersAdmin").hide();
 					$$("adminForm").clear();
-					$$("textareaAdminWindow").hide()
+					$$("textareaAdminWindow").hide();
 				}
 			}
 		]
@@ -29,7 +28,7 @@ const changeStatus = webix.ui({
 	body: {
 		type: "clean",
 		cols: [
-			{ width: 100 },
+			{width: 100},
 			{
 				view: "form",
 				id: "adminForm",
@@ -46,18 +45,19 @@ const changeStatus = webix.ui({
 						options: {
 							body: {
 								data: [
-									{ id: 1, value: "in progress" },
-									{ id: 2, value: "Declined" },
+									{id: 1, value: "in progress"},
+									{id: 2, value: "Declined"}
 								],
 								on: {
-									"onItemClick": function (id) {
+									onItemClick(id) {
 										if (id === "2") {
 											$$("textareaAdminWindow").config.value = curentUser.reasonStatus;
 											$$("textareaAdminWindow").show();
-
-										} else {
-											$$("textareaAdminWindow").hide()
 										}
+										else {
+											$$("textareaAdminWindow").hide();
+										}
+										return true;
 									}
 								}
 							}
@@ -68,7 +68,7 @@ const changeStatus = webix.ui({
 						view: "textarea",
 						name: "reason",
 						id: "textareaAdminWindow",
-						label: "Indicate reason",
+						label: "Indicate reason"
 					},
 					{
 						view: "button",
@@ -77,23 +77,25 @@ const changeStatus = webix.ui({
 						click() {
 							const value = $$("textareaAdminWindow").getValue();
 							const comboValue = $$("comboInForm").getText();
-							progressOfOrder.find(item => {
+							progressOfOrder.find((product) => {
+								const item = product;
 								if (item.orderNumber === curentUser.orderNumber) {
 									item.reasonStatus = value;
 									item.status = comboValue;
 								}
-							})
+								return true;
+							});
 							$$("adminForm").clear();
 							$$("windowOrdersAdmin").hide();
 							$$("datatableOrders").refresh();
-							$$("textareaAdminWindow").hide()
+							$$("textareaAdminWindow").hide();
 						}
 					}
-				],
+				]
 			},
-			{ width: 100 }
+			{width: 100}
 		]
-	},
+	}
 });
 
-export { changeStatus, curentUser }
+export {changeStatus, curentUser};

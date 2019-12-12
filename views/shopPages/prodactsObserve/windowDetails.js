@@ -1,12 +1,13 @@
-import { curentSelectedItem } from "./selectProdacts"
+/* eslint-disable import/prefer-default-export */
+import {curentSelectedItem} from "./selectProdacts";
 
 webix.protoUI(
 	{
 		name: "mytemplate",
-		getValue: function () {
+		getValue() {
 			return this.getValues();
 		},
-		setValue: function (values) {
+		setValue(values) {
 			this.setValues(values);
 		}
 	},
@@ -22,11 +23,12 @@ export const windowDetails = webix.ui({
 		width: 140
 	},
 	on: {
-		onBeforeShow: function () {
+		onBeforeShow() {
 			if (curentSelectedItem.star === 1) {
 				$$("iconView").config.icon = "mdi mdi-star star_gold";
 				$$("iconView").refresh();
-			} else {
+			}
+			else {
 				$$("iconView").config.icon = "mdi mdi-star star_grey";
 				$$("iconView").refresh();
 			}
@@ -39,13 +41,13 @@ export const windowDetails = webix.ui({
 		id: "windowHead",
 		css: "window_toolbar",
 		cols: [
-			{ view: "label", name: "FirstName", css: "text_in_windowHead" },
+			{view: "label", name: "FirstName", css: "text_in_windowHead"},
 			{
 				view: "icon",
 				icon: "mdi mdi-close",
 				css: "alter",
 				hotkey: "esc",
-				click: function () {
+				click() {
 					$$("window").hide();
 				}
 			}
@@ -79,7 +81,7 @@ export const windowDetails = webix.ui({
 							},
 							{
 								view: "mytemplate",
-								template: `<p class='text_winow'><b>Price</b> #price#</p>`,
+								template: "<p class='text_winow'><b>Price</b> #price#</p>",
 								name: "Price",
 								height: 100
 							},
@@ -90,9 +92,7 @@ export const windowDetails = webix.ui({
 									{
 										view: "template",
 										ratingValue: "",
-										template: (obj, view) => {
-											return `<p class='text_winow'><b>Rating</b> ${view.config.ratingValue}</p>`;
-										},
+										template: (obj, view) => `<p class='text_winow'><b>Rating</b> ${view.config.ratingValue}</p>`,
 										name: "Price",
 										id: "ratingWindow"
 									},
@@ -103,7 +103,7 @@ export const windowDetails = webix.ui({
 										height: 100,
 										align: "left",
 										icon: "",
-										click: function () {
+										click() {
 											if (curentSelectedItem.star === 1) {
 												curentSelectedItem.star = 0;
 												curentSelectedItem.rating--;
@@ -113,7 +113,8 @@ export const windowDetails = webix.ui({
 													curentSelectedItem.rating;
 												$$("myDatatable").refresh();
 												$$("ratingWindow").refresh();
-											} else {
+											}
+											else {
 												curentSelectedItem.star = 1;
 												curentSelectedItem.rating++;
 												this.config.icon = "mdi mdi-star star_gold";

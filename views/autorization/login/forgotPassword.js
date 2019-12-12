@@ -1,13 +1,13 @@
+/* eslint-disable import/prefer-default-export */
 export const windowResetPass = webix.ui({
 	view: "window",
 	id: "windowResetPass",
 	modal: true,
-	position: "center",
 	head: {
 		view: "toolbar",
 		type: "clean",
 		cols: [
-			{ template: "Reset Password", css: "window_toolbar_progress" },
+			{template: "Reset Password", css: "window_toolbar_progress"},
 			{
 				view: "icon",
 				icon: "mdi mdi-close",
@@ -22,7 +22,7 @@ export const windowResetPass = webix.ui({
 	body: {
 		type: "clean",
 		cols: [
-			{ width: 100 },
+			{width: 100},
 			{
 				view: "form",
 				id: "formWindowResetPass",
@@ -45,14 +45,17 @@ export const windowResetPass = webix.ui({
 						value: "Send Password Reset Link",
 						css: "webix_primary button_reset",
 						width: 250,
-						click() { }
+						click() {
+							$$("windowResetPass").hide();
+						}
 					}
 				]
 			},
-			{ width: 100 }
+			{width: 100}
 		]
 	},
-	position(state) {
+	position(st) {
+		const state = st;
 		state.top = 100;
 	}
 });

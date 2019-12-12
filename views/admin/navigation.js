@@ -1,6 +1,7 @@
-import { adminClietsInfo } from "./clientsInfo"
-import { adminOrders } from "./orders"
-import { addNewProdact } from "./addNewProdact"
+/* eslint-disable import/prefer-default-export */
+import {adminClietsInfo} from "./clientsInfo";
+import {adminOrders} from "./orders";
+import {addNewProdact} from "./addNewProdact";
 
 let menuData = [
 	{
@@ -17,28 +18,28 @@ let menuData = [
 	}
 ];
 
-var adminNavigation = {
+let adminNavigation = {
 	view: "sidebar",
 	id: "adminNavigation",
 	width: 250,
 	data: menuData,
 	on: {
-		onAfterSelect: function (id) {
+		onAfterSelect(id) {
 			$$(id).show();
 		}
 	}
 };
 
-let adminSet = {
+const adminSet = {
 	id: "adminSet",
 	cols: [
 		adminNavigation,
 		{
 			cells: [adminClietsInfo, adminOrders, addNewProdact],
-			animate: false,
+			animate: false
 
 		}
 	]
 };
 
-export { adminSet }
+export {adminSet};

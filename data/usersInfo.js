@@ -12,14 +12,14 @@ const usersInfoServer = [
 		name: "Dilana",
 		email: "bobmail@gmail.com",
 		password: "2",
-		created: new Date(2009, 11, 12),
+		created: new Date(2009, 11, 12)
 	}
 ];
 
-let usersInfo = new webix.DataCollection({ data: usersInfoServer });
+const usersInfo = new webix.DataCollection({data: usersInfoServer});
 
-const exam = [{ name: "user", userId: "0" }];
+const exam = [{name: "user", userId: "0"}];
 
-let currentUser = new webix.DataCollection({ data: exam });
+const currentUser = new webix.DataCollection({data: exam});
 
-export { usersInfo, currentUser };
+export {usersInfo, currentUser};

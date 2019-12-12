@@ -1,5 +1,6 @@
-import { windowRegister } from "./register/register"
-import { windowLogin } from "./login/login"
+/* eslint-disable import/prefer-default-export */
+import {windowRegister} from "./register/register";
+import {windowLogin} from "./login/login";
 
 const toolbar = {
 	view: "toolbar",

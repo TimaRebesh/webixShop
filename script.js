@@ -20,16 +20,13 @@ const treeNavigation = {
 	on: {
 		onAfterSelect() {
 			let selectedItem = this.getSelectedItem().value;
-			if (selectedItem == "Phones") {
-				$$("myDatatable").filter((obj) => {
-					return obj.value;
-				});
+			if (selectedItem === "Phones") {
+				$$("myDatatable").filter(obj => obj.value);
+				return true;
 			}
- else {
-				$$("myDatatable").filter((obj) => {
-					return obj.value === selectedItem;
-				});
-			}
+
+			$$("myDatatable").filter(obj => obj.value === selectedItem);
+			return true;
 		},
 		onItemClick() {
 			$$("myDatatable").show();
@@ -69,7 +66,7 @@ webix.ready(() => {
 	$$("textareaAdminWindow").hide();
 });
 
-const showCurrentUserOrders = function () {
+const showCurrentUserOrders = function show() {
 	const filteredOrders = $$("tableHistory").filter((obj) => {
 		const item = currentUser.serialize();
 		if (obj.userId === item[0].userId) {
